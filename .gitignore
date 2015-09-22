@@ -1,0 +1,23 @@
+
+## ripository
+bin/
+build/
+.gradle/
+.metadata/
+tmp/
+temp/
+target/
+logs/
+node_modules/
+gradledata/
+
+src/test/java/com/xseillier/psnapi/perso/
+.settings/
+
+## file
+*.log
+*.class
+*.bak
+.classpath
+.project
+
