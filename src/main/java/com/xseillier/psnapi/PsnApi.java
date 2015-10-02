@@ -7,9 +7,11 @@ import com.xseillier.psnapi.http.exception.AccessDeniedByPrivacyLevelException;
 import com.xseillier.psnapi.http.exception.LoginException;
 import com.xseillier.psnapi.http.exception.PsnErrorException;
 import com.xseillier.psnapi.model.PsnContext;
+import com.xseillier.psnapi.model.block.BlockList;
 import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.Profile;
+import com.xseillier.psnapi.model.friend.FriendProfile;
 import com.xseillier.psnapi.model.friend.ProfileList;
+import com.xseillier.psnapi.model.param.BlockPaginationParam;
 import com.xseillier.psnapi.model.param.FriendPaginationParam;
 import com.xseillier.psnapi.model.param.ProfileParam;
 import com.xseillier.psnapi.model.param.TrophyPaginationParam;
@@ -85,7 +87,7 @@ public interface PsnApi {
 	 * @return
 	 * @throws IOException
 	 */
-	public Profile getFriendDetail( String aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException;
+	public FriendProfile getFriendDetail( String aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException;
 	
 	
 	/**
@@ -97,6 +99,35 @@ public interface PsnApi {
 	 */
 	public ProfileList getMultiFriendDetail( List<String> aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException;
 	
+	
+	/**
+	 * remove Friend from your friend list
+	 * @since 0.2 beta
+	 * @param aYourOnlineId
+	 * @param FriendOnlineId
+	 */
+	public void delFriend( String aYourOnlineId, String FriendOnlineId) throws IOException, PsnErrorException;
+	
+	
+	/**
+	 * add Friend from your friend list / use olso to accept request add friend
+	 * @since 0.2 beta
+	 * @param aYourOnlineId
+	 * @param FriendOnlineId
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	public void addFriend( String aYourOnlineId, String FriendOnlineId) throws IOException, PsnErrorException;
+	
+	/**
+	 * 
+	 * @param aYourOnlineId
+	 * @param FriendOnlineId
+	 * @param aRequestMessage
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	public void addFriend( String aYourOnlineId, String FriendOnlineId, String aRequestMessage ) throws IOException, PsnErrorException;
 	
 	/**
 	 * 
@@ -135,5 +166,33 @@ public interface PsnApi {
 	 */
 	public TrophyGroupsDetailsResponse getTrophyGroupsDetail( String aGameId, String aTrophyGroupId, TrophyParam aTrophyParam ) throws IOException, PsnErrorException;
 	
+	
+	/**
+	 * 
+	 * @param aProfileOnlineId
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	public void blockProfile( String oYourOnlineId, String aProfileOnlineId )  throws IOException, PsnErrorException;
+	
+	/**
+	 * 
+	 * @param aProfileOnlineId
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	public void unblockProfile( String oYourOnlineId, String aProfileOnlineId )  throws IOException, PsnErrorException;
+	
+	/**
+	 * 
+	 * @param aOnlineId
+	 * @param aProfileParam
+	 * @param aPagination
+	 * @return
+	 * @throws IOException
+	 * @throws AccessDeniedByPrivacyLevelException
+	 * @throws PsnErrorException
+	 */
+	public BlockList getBlockProfileList(  String aOnlineId, ProfileParam aProfileParam, BlockPaginationParam aPagination ) throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException;
 	
 }

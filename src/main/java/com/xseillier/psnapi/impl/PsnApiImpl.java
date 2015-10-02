@@ -31,11 +31,14 @@ import com.xseillier.psnapi.model.AccessToken;
 import com.xseillier.psnapi.model.PsnContext;
 import com.xseillier.psnapi.model.PsnError;
 import com.xseillier.psnapi.model.ServiceUrl;
+import com.xseillier.psnapi.model.block.BlockList;
 import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.Profile;
+import com.xseillier.psnapi.model.friend.FriendProfile;
 import com.xseillier.psnapi.model.friend.ProfileList;
+import com.xseillier.psnapi.model.param.BlockPaginationParam;
 import com.xseillier.psnapi.model.param.FriendPaginationParam;
 import com.xseillier.psnapi.model.param.ProfileParam;
+import com.xseillier.psnapi.model.param.RequestMessage;
 import com.xseillier.psnapi.model.param.TrophyPaginationParam;
 import com.xseillier.psnapi.model.param.TrophyParam;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
@@ -266,16 +269,16 @@ public class PsnApiImpl implements PsnApi {
 	public FriendList getFriendList( String aOnlineId, ProfileParam aProfileParam, FriendPaginationParam aPagination ) throws IOException,AccessDeniedByPrivacyLevelException, PsnErrorException {
 		
 		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_FRIEND_LIST;
-		
+				
 		/* TODO supprimer les valeur en dur*/
 		Call<FriendList> oFriendListCall  = mPSNApiService.getFriendList( UrlUtils.injectDataInUrl(oBaseUrl, 
-				UrlParamCst.URL_PARAM_ONLINEID , aOnlineId ),
+				UrlParamCst.URL_PARAM_ONLINE_ID , aOnlineId ),
 				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"onlineId",
-				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,
-				"primary",
-				"friend",
+				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
+				aProfileParam.getPresenceType(),
+				aProfileParam.getFriendStatus().getData(),
 				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPaginationParam.LIMIT ) );
 		
 		Response<FriendList> oFriendListResponse = oFriendListCall.execute();
@@ -299,17 +302,17 @@ public class PsnApiImpl implements PsnApi {
 	 * @throws PsnErrorException
 	 */
 	@Override
-	public Profile getFriendDetail(String aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException {
+	public FriendProfile getFriendDetail(String aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException {
 		
 		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_FRIEND_DETAIL;
 		 
-		Call<Profile> oFriendCall  = mPSNApiService.getFriendDetail( UrlUtils.injectDataInUrl(oBaseUrl,
-				UrlParamCst.URL_PARAM_ONLINEID, aOnlineId ),
+		Call<FriendProfile> oFriendCall  = mPSNApiService.getFriendDetail( UrlUtils.injectDataInUrl(oBaseUrl,
+				UrlParamCst.URL_PARAM_ONLINE_ID, aOnlineId ),
 				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null );
 		
-		Response<Profile> oFriendResponse = oFriendCall.execute();
+		Response<FriendProfile> oFriendResponse = oFriendCall.execute();
 	
 		return processResponse( oFriendResponse  );
 		
@@ -334,10 +337,73 @@ public class PsnApiImpl implements PsnApi {
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null );
 		
-		Response<ProfileList> oProfileListResponse = oProfileListCall.execute();
-		return processResponse( oProfileListResponse );		
+		return processResponse( oProfileListCall.execute() );		
 	}
 	
+	
+	
+	
+	/**
+	 * 
+	 * @param aOnlineId
+	 * @param aFriendOnlineId
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	@Override
+	public void delFriend(String aOnlineId, String aFriendOnlineId) throws IOException, PsnErrorException {
+	
+		 
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_DEL_FRIEND;
+		
+		Map<String, String> oMapParam = new HashMap<>();
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_ID, aOnlineId);
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_FRIEND_ID, aFriendOnlineId);
+		
+		Call<Void> oCall  = mPSNApiService.delFriend( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+	
+		processResponse( oCall.execute() );	
+	}
+
+	/**
+	 * 
+	 * @param aOnlineId
+	 * @param aFriendOnlineId
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	
+	@Override
+	public void addFriend(String aOnlineId, String aFriendOnlineId) throws IOException, PsnErrorException {
+		 addFriend( aOnlineId,  aFriendOnlineId,  "" );
+	}
+	
+	
+	/**
+	 * 
+	 * @param aOnlineId
+	 * @param aFriendOnlineId
+	 * @param aRequestMessage resquest message
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	@Override
+	public void addFriend(String aOnlineId, String aFriendOnlineId, String aRequestMessage ) throws IOException, PsnErrorException {
+	
+		 
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_ADD_FRIEND;
+		
+		Map<String, String> oMapParam = new HashMap<>();
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_ID, aOnlineId);
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_FRIEND_ID, aFriendOnlineId);
+		
+		Call<Void> oCall  = mPSNApiService.addFriend( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
+				new RequestMessage( aRequestMessage) );
+	
+		processResponse( oCall.execute() );	
+	}
 	
 	/**
 	 * return trophy base friend profile
@@ -352,9 +418,83 @@ public class PsnApiImpl implements PsnApi {
 		
 		return processResponse( oServiceUrlResponse );
 	}
+	
 
 	
+//=============================================================================
+//
+// "block" METHODS
+//
+//=============================================================================
+	@Override
+	public void blockProfile(String oYourOnlineId, String aProfileOnlineId) throws IOException,
+			PsnErrorException {
+
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_BLOCK_PROFILE;
+
+		Map<String, String> oMapParam = new HashMap<>();
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_ID, oYourOnlineId);
+		oMapParam.put(UrlParamCst.URL_PARAM_PROFILE_ONLINE_ID, aProfileOnlineId);
 		
+		
+		Call<Void> oCall  = mPSNApiService.blockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+	
+		processResponse( oCall.execute() );	
+		
+	}
+
+	@Override
+	public void unblockProfile(String oYourOnlineId, String aProfileOnlineId) throws IOException,
+			PsnErrorException {
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_BLOCK_PROFILE;
+
+		Map<String, String> oMapParam = new HashMap<>();
+		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_ID, oYourOnlineId);
+		oMapParam.put(UrlParamCst.URL_PARAM_PROFILE_ONLINE_ID, aProfileOnlineId);
+		
+		
+		Call<Void> oCall  = mPSNApiService.unblockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+	
+		processResponse( oCall.execute() );	
+	}
+
+
+	/**
+	 * @param aYourOnlineId
+	 * @param aProfileParam
+	 * @param aPagination
+	 * @return list of blocked profile
+	 * 
+	 */
+	@Override
+	public BlockList getBlockProfileList(String aYourOnlineId, ProfileParam aProfileParam, BlockPaginationParam aPagination)
+			throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException {
+		
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_BLOCK_LIST_PROFILE;
+		
+		/* TODO supprimer les valeur en dur*/
+		Call<BlockList> oBlockListCall  = mPSNApiService.getBlockProfileList( UrlUtils.injectDataInUrl(oBaseUrl, 
+				UrlParamCst.URL_PARAM_ONLINE_ID , aYourOnlineId ),
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
+				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
+				"onlineId",
+				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
+				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPaginationParam.LIMIT ) );
+		
+		Response<BlockList> oBlockListResponse = oBlockListCall.execute();
+	
+		BlockList oBlockList =  processResponse( oBlockListResponse );
+		
+		if( aPagination.getOffset() + aPagination.getLimit() <= oBlockList.getTotalResults() ) {
+			BlockPaginationParam oNextPaginationParam = new BlockPaginationParam( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			oBlockList.setNextPagination( oNextPaginationParam );
+		}
+				
+		return oBlockList;
+	}
+
 //=============================================================================
 //
 // Trohpy METHODS
@@ -486,6 +626,5 @@ public class PsnApiImpl implements PsnApi {
 		}
 		return null;
 	}
-
 
 }

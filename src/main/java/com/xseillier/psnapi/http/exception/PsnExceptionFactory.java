@@ -18,6 +18,12 @@ public class PsnExceptionFactory {
 		else if (RateLimitExceededException.CODE == aPsnError.getCode() ) {
 			return new RateLimitExceededException( aPsnError );
 		}
+		else if (UserNotFoundException.CODE == aPsnError.getCode() ) {
+			return new UserNotFoundException( aPsnError );
+		}
+		else if (AleadyFriendRequestedException.CODE == aPsnError.getCode() ) {
+			return new AleadyFriendRequestedException( aPsnError );
+		}
 		return new PsnErrorException( aPsnError );
 	}
 }

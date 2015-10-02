@@ -11,22 +11,22 @@ import java.util.List;
 public class ProfileList  {
 	
 	
-	private List<Profile> mProfiles;
+	private List<FriendProfile> mProfiles;
 	private int           mSize;	
 	
 	public ProfileList()
 	{
-		mProfiles = new ArrayList<Profile>();
+		mProfiles = new ArrayList<FriendProfile>();
 	}
 //=============================================================================
 // Accessor
 //=============================================================================
 
-	public List<Profile> getProfiles() {
+	public List<FriendProfile> getProfiles() {
 		return mProfiles;
 	}
 
-	public void setProfiles(List<Profile> aProfilesList) {
+	public void setProfiles(List<FriendProfile> aProfilesList) {
 		mProfiles = aProfilesList;
 	}
 

@@ -14,7 +14,9 @@ public enum PresenceEnum implements DataEnum<String>{
 	@SerializedName("online")
 	ONLINE("online"),
 	@SerializedName("offline")
-	OFFLINE("offline");
+	OFFLINE("offline"),
+	@SerializedName("standby")
+	STANDBY("standby");
 	
 	
 	private String mDate;

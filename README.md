@@ -10,14 +10,25 @@ This API is based on a reverse engineer work on the Android application.
 * Friend list
 * trophy list
 * player profile(depends on users privacy)
-
+* add/del friend
+* block/unblock profile
 ### Limitation
 The api is limited at 100 requests on 15 minutes. This limitation is imposed by the PSN servers
 ### Duid
 Duid is an unique id use by Sony to distinguish the devices.  He is based on device manufacturer name and mac address.
 You can find classes in package package com.xseillier.psnapi.duid, all you need to create an duid id fake
+
+### Change log
+
+*0.2 beta
+	* add/del friend
+	* block / unblock profile
+	
+	
+*0.1 beta initial version
+
 ### Version
-0.1 Beta
+0.2 Beta
 ### Next
 * add more doc
 * add/delete friend

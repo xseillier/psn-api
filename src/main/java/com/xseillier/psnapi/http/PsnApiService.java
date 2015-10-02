@@ -1,8 +1,10 @@
 package com.xseillier.psnapi.http;
 
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_AUTHORIZATION;
+import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_CONTENT_TYPE;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_REQUESTED_WITH;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_X_NP_ACCESS_TOKEN;
+import static com.xseillier.psnapi.http.cst.HttpHeaderCst.TYPE_MINE_JSON;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.PARAM_REQUESTED_WITH;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AUTH_TOKEN_REDIRECT_URI;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AVATARSIZES;
@@ -17,7 +19,7 @@ import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_IMAGESIZE;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_LIMIT;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_NP_LANGUAGE;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_OFFSET;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_ONLINEID;
+import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_ONLINE_ID;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PLATFORM;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PRESENCETYPE;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_REFRESH_TOKEN;
@@ -25,6 +27,8 @@ import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SCOPE;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SORT;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_STATE;
 import retrofit.Call;
+import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -36,9 +40,11 @@ import retrofit.http.Url;
 
 import com.xseillier.psnapi.model.AccessToken;
 import com.xseillier.psnapi.model.ServiceUrl;
+import com.xseillier.psnapi.model.block.BlockList;
 import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.Profile;
+import com.xseillier.psnapi.model.friend.FriendProfile;
 import com.xseillier.psnapi.model.friend.ProfileList;
+import com.xseillier.psnapi.model.param.RequestMessage;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyTitleList;
@@ -151,7 +157,7 @@ public interface PsnApiService {
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
 	@GET
-	Call<Profile> getFriendDetail(@Url String aUrl,
+	Call<FriendProfile> getFriendDetail(@Url String aUrl,
 			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
@@ -170,10 +176,36 @@ public interface PsnApiService {
 	@GET
 	Call<ProfileList> getMultiFriendDetail(@Url String aUrl,
 			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
-			@Query( URL_PARAM_ONLINEID ) String aOnlineIds,
+			@Query( URL_PARAM_ONLINE_ID ) String aOnlineIds,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
 	
+	
+	
+	/**
+	 * del friend from friend list
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@DELETE
+	Call<Void> delFriend(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	
+	
+	
+	/**
+	 * add friend from friend list ( new Friend must accept)
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@POST
+	Call<Void> addFriend(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Body RequestMessage aRequestMessage);
 	
 	
 	/**
@@ -236,5 +268,48 @@ public interface PsnApiService {
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_IMAGESIZE ) String aImageSize );
 	
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@GET
+	Call<Void> blockProfile(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@DELETE
+	Call<Void> unblockProfile(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
 
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aProfileParam
+	 * @param aSort
+	 * @param aAvatarSize
+	 * @param aOffset
+	 * @param aLimit
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@GET
+	Call<BlockList> getBlockProfileList(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_SORT ) String aSort, 
+			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
+			@Query( URL_PARAM_OFFSET ) int aOffset,
+			@Query( URL_PARAM_LIMIT ) int aLimit );
 }

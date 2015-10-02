@@ -22,7 +22,8 @@ public enum ProfileOptionEnum implements DataEnum<String>{
 	REQUEST_MESSAGE_FLAG("requestMessageFlag"),
 	NP_TITLE_ICON_URL("npTitleIconUrl"),
 	DEFAULT("@default"),    
-	MUTUAL_FRIENDS_COUNT("mutualFriendsCount");
+	MUTUAL_FRIENDS_COUNT("mutualFriendsCount"),
+	PROFILE("profile");
 	
 	private String mData;
 	

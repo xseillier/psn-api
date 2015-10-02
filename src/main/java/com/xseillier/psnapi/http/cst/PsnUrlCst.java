@@ -21,11 +21,17 @@ public class PsnUrlCst {
 	public static final String BASE_URL_NOTIFICATION_LIST  = "https://asm.np.community.playstation.net/asm/v1/apps/me/baseUrls/notificationList";
 	public static final String BASE_URL_SESSION_INVITATION = "https://asm.np.community.playstation.net/asm/v1/apps/me/baseUrls/sessionInvitation";	
 
-	public static final String URI_FRIEND_LIST             = "/v1/users/{onlineId}/friendList"; 
+	public static final String URI_FRIEND_LIST             = "/v1/users/{onlineId}/friendList";
+	public static final String URI_DEL_FRIEND              = URI_FRIEND_LIST + "/{onlineFriendId}"; 
+	public static final String URI_ADD_FRIEND              = URI_DEL_FRIEND; 
 	public static final String URI_FRIEND_DETAIL           = "/v1/users/{onlineId}/profile"; 
 	public static final String URI_MULTI_FRIEND_DETAIL     = "/v1/profiles"; 
 	public static final String URI_TROPHY_TITLES           = "/v1/trophyTitles";
 	public static final String URI_TROPHY_GROUPS           = "/v1/trophyTitles/{gameId}/trophyGroups";
 	public static final String URI_TROPHY_GROUPS_DETAILS   = "/v1/trophyTitles/{gameId}/trophyGroups/{trophyGroupId}/trophies";
+	
+	public static final String URI_BLOCK_LIST_PROFILE      = "/v1/users/{onlineId}/blockList"; 
+	public static final String URI_BLOCK_PROFILE           = URI_BLOCK_LIST_PROFILE + "/{profileOnlineId}"; 
+	public static final String URI_UNBLOCK_PROFILE         = URI_BLOCK_PROFILE; 
 	
 }

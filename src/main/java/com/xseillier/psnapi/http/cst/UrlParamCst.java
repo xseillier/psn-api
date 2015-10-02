@@ -20,7 +20,9 @@ public class UrlParamCst {
 	public static final String URL_PARAM_STATE                    = "state";
 	public static final String URL_PARAM_DUID                     = "duid";
 	public static final String URL_PARAM_REFRESH_TOKEN            = "refresh_token";  
-	public static final String URL_PARAM_ONLINEID                 = "onlineId";
+	public static final String URL_PARAM_ONLINE_ID                = "onlineId";
+	public static final String URL_PARAM_ONLINE_FRIEND_ID         = "onlineFriendId";
+	public static final String URL_PARAM_PROFILE_ONLINE_ID        = "profileOnlineId";
 	public static final String URL_PARAM_FIELDS                   = "fields";
 	public static final String URL_PARAM_SORT                     = "sort";
 	

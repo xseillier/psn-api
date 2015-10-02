@@ -16,9 +16,10 @@ import com.xseillier.psnapi.impl.PsnApiImpl;
 import com.xseillier.psnapi.model.PsnContext;
 import com.xseillier.psnapi.model.enumeration.PresenceEnum;
 import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.Profile;
+import com.xseillier.psnapi.model.friend.FriendProfile;
 import com.xseillier.psnapi.model.param.FriendPaginationParam;
 import com.xseillier.psnapi.model.param.ProfileParam;
+import com.xseillier.psnapi.model.param.ProfileParamFactory;
 import com.xseillier.psnapi.model.param.enumeration.ProfileOptionEnum;
 import com.xseillier.psnapi.model.user.User;
 
@@ -61,11 +62,11 @@ public class Test {
 			User oUser = oPSNApi.getAccountInformation();		
 			System.out.println("Your online id is : " + oUser.getOnlineId() );
 		
+					
+			ProfileParam oProfileParam = ProfileParamFactory.create( ProfileParamFactory.FULL_PROFILE );
 			
-			ProfileParam oProfileParam = new ProfileParam.ProfileParamBuilder().addProfileOption(ProfileOptionEnum.ONLINE_ID).build();
-						
 			FriendList oFriendListResponse;
-			List<Profile> mFriendList = new ArrayList<>();
+			List<FriendProfile> oFriendList = new ArrayList<>();
 			
 			//retriveid friend list from offset 0
 			FriendPaginationParam oNext = new FriendPaginationParam( 0 );
@@ -74,21 +75,25 @@ public class Test {
 					
 				oFriendListResponse = oPSNApi.getFriendList( oUser.getOnlineId(), oProfileParam, oNext );
 				oNext = oFriendListResponse.getNextPagination();
-				mFriendList.addAll( oFriendListResponse.getFriendList() );
+				oFriendList.addAll( oFriendListResponse.getFriendList() );
 			}
 			
 			System.out.println("List of your Friends : " );
-			for( Profile oProfile: mFriendList ) {
+			for( FriendProfile oProfile: oFriendList ) {
 				System.out.print( oProfile.getOnlineId()  );
-				if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.ONLINE ) {
-					System.out.print(" is online on " + oProfile.getPresence().getPrimaryInfo().getPlatform().getData() );
-					if( oProfile.getPresence().getPrimaryInfo().getGameTitleInfo() != null ) {
-						System.out.print(" and play to " + oProfile.getPresence().getPrimaryInfo().getGameTitleInfo().getTitleName()  + "\n\tgame status : " + oProfile.getPresence().getPrimaryInfo().getGameStatus() );
+				if( oProfile.getPresence() != null ) {
+					if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.ONLINE ) {
+						System.out.print(" is online on " + oProfile.getPresence().getPrimaryInfo().getPlatform().getData() );
+						if( oProfile.getPresence().getPrimaryInfo().getGameTitleInfo() != null ) {
+							System.out.print(" and play to " + oProfile.getPresence().getPrimaryInfo().getGameTitleInfo().getTitleName()  + "\n\tgame status : " + oProfile.getPresence().getPrimaryInfo().getGameStatus() );
+						}
+						System.out.println(".");
+					} else if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.STANDBY ) {
+						System.out.println(" is standby." );
 					}
-					System.out.println(".");
-				}
-				else {
-					System.out.println(" is offline.");
+					else {
+						System.out.println(" is offline.");
+					}
 				}
 			}			
 		}

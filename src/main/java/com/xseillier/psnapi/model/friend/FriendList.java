@@ -12,7 +12,7 @@ import com.xseillier.psnapi.model.param.FriendPaginationParam;
 public class FriendList {
 	
 	
-	private List<Profile> mFriendList = new ArrayList<Profile>();
+	private List<FriendProfile> mFriendList = new ArrayList<FriendProfile>();
 	private int mSize;
     private int mStart;
     private int mTotalResults;
@@ -24,7 +24,7 @@ public class FriendList {
 // Accessor
 //=============================================================================
 
-    public List<Profile> getFriendList() {
+    public List<FriendProfile> getFriendList() {
 		return mFriendList;
 	}
     
@@ -40,7 +40,7 @@ public class FriendList {
 		return mTotalResults;
 	}
 	
-	public void setFriendList(List<Profile> aFriendList) {
+	public void setFriendList(List<FriendProfile> aFriendList) {
 		mFriendList = aFriendList;
 	}
 	
