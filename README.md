@@ -12,6 +12,7 @@ This API is based on a reverse engineer work on the Android application.
 * player profile(depends on users privacy)
 * add/del friend
 * block/unblock profile
+* retrieved/send message 
 
 ### Limitation
 The api is limited at 100 requests on 15 minutes. This limitation is imposed by the PSN servers
@@ -22,6 +23,8 @@ You can find classes in package package com.xseillier.psnapi.duid, all you need 
 
 ### Change log
 
+*0.3 beta
+
 *0.2 beta
 	* add/del friend
 	* block / unblock profile
@@ -30,11 +33,10 @@ You can find classes in package package com.xseillier.psnapi.duid, all you need 
 *0.1 beta initial version
 
 ### Version
-0.2 Beta
+0.3 Beta
 
 ### Next
 * add more doc
-* retrieved/send message 
 
 
 ### Sample
@@ -68,36 +70,90 @@ public static void main(String[] args) {
 			User oUser = oPSNApi.getAccountInformation();		
 			System.out.println("Your online id is : " + oUser.getOnlineId() );
 		
+					
+			ProfileParam oProfileParam = ProfileParamFactory.create( ProfileParamFactory.FULL_PROFILE );
 			
-			ProfileParam oProfileParam = new ProfileParam.ProfileParamBuilder().addProfileOption(ProfileOptionEnum.ONLINE_ID).build();
-						
 			FriendList oFriendListResponse;
-			List<Profile> mFriendList = new ArrayList<>();
+			List<FriendProfile> oFriendList = new ArrayList<>();
 			
 			//retriveid friend list from offset 0
-			FriendPaginationParam oNext = new FriendPaginationParam( 0 );
+			FriendPagination oNext = new FriendPagination( 0 );
 			
 			while( oNext != null ) {		
 					
 				oFriendListResponse = oPSNApi.getFriendList( oUser.getOnlineId(), oProfileParam, oNext );
 				oNext = oFriendListResponse.getNextPagination();
-				mFriendList.addAll( oFriendListResponse.getFriendList() );
+				oFriendList.addAll( oFriendListResponse.getFriendList() );
 			}
 			
 			System.out.println("List of your Friends : " );
-			for( Profile oProfile: mFriendList ) {
+			for( FriendProfile oProfile: oFriendList ) {
 				System.out.print( oProfile.getOnlineId()  );
-				if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.ONLINE ) {
-					System.out.print(" is online on " + oProfile.getPresence().getPrimaryInfo().getPlatform().getData() );
-					if( oProfile.getPresence().getPrimaryInfo().getGameTitleInfo() != null ) {
-						System.out.print(" and play to " + oProfile.getPresence().getPrimaryInfo().getGameTitleInfo().getTitleName()  + "\n\tgame status : " + oProfile.getPresence().getPrimaryInfo().getGameStatus() );
+				if( oProfile.getPresence() != null ) {
+					if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.ONLINE ) {
+						System.out.print(" is online on " + oProfile.getPresence().getPrimaryInfo().getPlatform().getData() );
+						if( oProfile.getPresence().getPrimaryInfo().getGameTitleInfo() != null ) {
+							System.out.print(" and play to " + oProfile.getPresence().getPrimaryInfo().getGameTitleInfo().getTitleName()  + "\n\tgame status : " + oProfile.getPresence().getPrimaryInfo().getGameStatus() );
+						}
+						System.out.println(".");
+					} else if( oProfile.getPresence().getPrimaryInfo().getOnlineStatus() == PresenceEnum.STANDBY ) {
+						System.out.println(" is standby." );
 					}
-					System.out.println(".");
+					else {
+						System.out.println(" is offline.");
+					}
 				}
-				else {
-					System.out.println(" is offline.");
+			}
+			
+			DiscussionPagination oDiscussionPagination = new DiscussionPagination( 0 );
+			DiscussionList oDiscussionList = oPSNApi.getDiscussionList(oUser.getOnlineId(), DiscussionParamFactory.create( DiscussionParamFactory.GET_DISCUSSION_LIST ), oDiscussionPagination );	
+			DiscussionParam oDiscussionParam = DiscussionParamFactory.create( DiscussionParamFactory.GET_DISCUSSION );
+			
+			
+			while( oDiscussionPagination != null ) {
+				
+				oDiscussionList = oPSNApi.getDiscussionList(oUser.getOnlineId(), DiscussionParamFactory.create( DiscussionParamFactory.GET_DISCUSSION_LIST ), oDiscussionPagination );		
+				oDiscussionPagination = oDiscussionList.getNextPagination();
+				
+				for( MessageGroup oMessageGroup:  oDiscussionList.getMessageGroups() ) {
+					System.out.println( "===============================================================================" );
+					List<Long> oMessageUidList = new ArrayList<>();
+					
+					System.out.print( "Member in discussion : ");
+					for( Member oMember : oMessageGroup.getMessageGroupDetail().getMembers() ){
+						System.out.print(  oMember.getOnlineId() + " " );
+						if( oMember.getOnlineId().equals("conan_hk" ) ){
+							oPSNApi.addMessageToDiscussion(oMessageGroup.getMessageGroupId(), "Hello from PSN API (https://github.com/xseillier)", new File("c:/temp/github.jpg") );
+						}
+					}
+					System.out.println();
+					
+					
+					//send message to discussion
+					oPSNApi.addMessageToDiscussion(oMessageGroup.getMessageGroupId(), "Hello from PSN API (https://github.com/xseillier)" );
+					
+					//send message to discussion with image
+					//oPSNApi.addMessageToDiscussion(oMessageGroup.getMessageGroupId(), "Hello from PSN API (https://github.com/xseillier)", new File("<IMAGE PATH>")  );
+					
+					Discussion oDiscussion = oPSNApi.getDiscussion( oDiscussionParam, oMessageGroup.getMessageGroupId() );
+								
+					for(Message oMessage : oDiscussion.getMessages() ) {
+						System.out.println( "\tMessage from " + oMessage.getSenderOnlineId() );
+						System.out.println( "\t\tDate : " + oMessage.getReceivedDate() );
+						System.out.println( "\t\tRead : " + ( ( oMessage.isSeenFlag() )?"Yes":"No" ) );
+						System.out.println( "\t\tUid  : " + oMessage.getMessageUid() );
+						System.out.println( "\t\tBody : " + oMessage.getBody() );	
+						if( !oMessage.isSeenFlag() ) {
+							oMessageUidList.add( oMessage.getMessageUid() );
+						}
+					}
+					
+					if( oMessageUidList.size() > 0 ) {
+						//mark message(s) as read
+						oPSNApi.markMessageAsSeen(oMessageUidList, oMessageGroup.getMessageGroupId() );
+					}
 				}
-			}			
+		}
 		}
 		catch (LoginException e) {
 			System.out.println("Login Error " + e.getMessage() );
