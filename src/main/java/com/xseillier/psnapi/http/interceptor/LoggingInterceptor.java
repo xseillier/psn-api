@@ -22,7 +22,7 @@ public class LoggingInterceptor  implements Interceptor {
 		    System.out.println( request.method() );
 			    
 		    System.out.println(String.format("Sending request %s on %s%n%s", request.url(), chain.connection(), request.headers() ) );
-
+		  
 		    com.squareup.okhttp.Response response = chain.proceed(request);
 
 		    long t2 = System.nanoTime();

@@ -11,19 +11,22 @@ import com.xseillier.psnapi.model.param.enumeration.ProfileOptionEnum;
  */
 public class ProfileParamFactory {
 
-	public static final int SIMPLE_PROFILE      = 1;
-	public static final int FULL_PROFILE        = 2;
-	public static final int BLOKED_LIST_PROFILE = 3;
+	public static final int SIMPLE_PROFILE         = 1;
+	public static final int FULL_PROFILE           = 2;
+	public static final int BLOKED_LIST_PROFILE    = 3;
+	public static final int FRIEND_SEND_REQUEST    = 4;
+	public static final int FRIEND_RECEIVE_REQUEST = 5;
 	
 	public static ProfileParam create( int aType ) {
 		
 		switch( aType ) {
-			case SIMPLE_PROFILE      : return createSimpleProfile();
-			case FULL_PROFILE        : return createFullProfile();
-			case BLOKED_LIST_PROFILE : return createBlokedListProfile();
-			
+			case SIMPLE_PROFILE         : return createSimpleProfile();
+			case FULL_PROFILE           : return createFullProfile();
+			case BLOKED_LIST_PROFILE    : return createBlokedListProfile();
+			case FRIEND_SEND_REQUEST    : return createFriendSendRequestProfile();
+			case FRIEND_RECEIVE_REQUEST : return createFriendReceiveRequestProfile();
 			default:
-				throw new IllegalArgumentException("Type de produit inconnu");
+				throw new IllegalArgumentException("Type unknown");
 		}
 	}
 	
@@ -76,4 +79,35 @@ public class ProfileParamFactory {
 		.build();
 	}
 	
+	
+	private static ProfileParam createFriendSendRequestProfile() {
+		return new ProfileParam.ProfileParamBuilder()
+		.addProfileOption(ProfileOptionEnum.AVATAR_URLS)       
+		.addProfileOption(ProfileOptionEnum.PLUS)
+        .addProfileOption(ProfileOptionEnum.PERSONAL_DETAIL)
+        .addProfileOption(ProfileOptionEnum.PERSONAL_DETAIL_DISPLAY_NAME )
+        .addProfileOption(ProfileOptionEnum.RELATION )
+        .addProfileOption(ProfileOptionEnum.PRESENCE )
+        .addProfileOption(ProfileOptionEnum.TROPHY_SUMMARY)
+        .addProfileOption(ProfileOptionEnum.IS_OFFICIALLY_VERIFIED)
+        .addProfileOption(ProfileOptionEnum.REQUESTED_DATE)
+        .addImageSize(ImageSizeEnum.LARGE).build();
+
+	}
+	
+	
+	private static ProfileParam createFriendReceiveRequestProfile() {
+		return new ProfileParam.ProfileParamBuilder()
+		.addProfileOption(ProfileOptionEnum.AVATAR_URLS)       
+		.addProfileOption(ProfileOptionEnum.PLUS)
+        .addProfileOption(ProfileOptionEnum.PERSONAL_DETAIL)
+        .addProfileOption(ProfileOptionEnum.PERSONAL_DETAIL_DISPLAY_NAME )
+        .addProfileOption(ProfileOptionEnum.RELATION )
+        .addProfileOption(ProfileOptionEnum.PRESENCE )
+        .addProfileOption(ProfileOptionEnum.TROPHY_SUMMARY)
+        .addProfileOption(ProfileOptionEnum.IS_OFFICIALLY_VERIFIED)
+        .addProfileOption(ProfileOptionEnum.REQUESTED_DATE)
+        .addImageSize(ImageSizeEnum.LARGE).build();
+
+	}
 }

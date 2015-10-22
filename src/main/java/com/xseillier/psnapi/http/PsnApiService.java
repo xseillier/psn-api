@@ -6,11 +6,13 @@ import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_REQUESTED_WITH;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_X_NP_ACCESS_TOKEN;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.TYPE_MINE_JSON;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.PARAM_REQUESTED_WITH;
+import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_MESSAGE_UID;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AUTH_TOKEN_REDIRECT_URI;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AVATARSIZES;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CLIENT_ID;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CLIENT_SECRET;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CODE;
+import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_DIRECTION;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_DUID;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_FIELDS;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_FRIENDSTATUS;
@@ -24,6 +26,7 @@ import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PLATFORM;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PRESENCETYPE;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_REFRESH_TOKEN;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SCOPE;
+import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SINCE_MESSAGE_UID;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SORT;
 import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_STATE;
 import retrofit.Call;
@@ -35,6 +38,7 @@ import retrofit.http.GET;
 import retrofit.http.Header;
 import retrofit.http.Headers;
 import retrofit.http.POST;
+import retrofit.http.PUT;
 import retrofit.http.Query;
 import retrofit.http.Url;
 
@@ -43,7 +47,15 @@ import com.xseillier.psnapi.model.ServiceUrl;
 import com.xseillier.psnapi.model.block.BlockList;
 import com.xseillier.psnapi.model.friend.FriendList;
 import com.xseillier.psnapi.model.friend.FriendProfile;
+import com.xseillier.psnapi.model.friend.FriendReceiveRequestList;
+import com.xseillier.psnapi.model.friend.FriendSendRequestList;
 import com.xseillier.psnapi.model.friend.ProfileList;
+import com.xseillier.psnapi.model.messaging.Discussion;
+import com.xseillier.psnapi.model.messaging.DiscussionList;
+import com.xseillier.psnapi.model.messaging.MemberList;
+import com.xseillier.psnapi.model.messaging.SendMessageResponse;
+import com.xseillier.psnapi.model.messaging.SendMessage;
+import com.xseillier.psnapi.model.param.MessageSeen;
 import com.xseillier.psnapi.model.param.RequestMessage;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsResponse;
@@ -208,6 +220,57 @@ public interface PsnApiService {
 			@Body RequestMessage aRequestMessage);
 	
 	
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aProfileParam
+	 * @param aAvatarSize
+	 * @param aPresenceType
+	 * @param aDirection
+	 * @param aOffset
+	 * @param aLimit
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@GET
+	Call<FriendSendRequestList> getFriendSendRequest(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_SORT ) String aSort, 
+			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
+			@Query( URL_PARAM_PRESENCETYPE ) String aPresenceType,
+			@Query( URL_PARAM_DIRECTION ) String aDirection,
+			@Query( URL_PARAM_OFFSET ) int aOffset,
+			@Query( URL_PARAM_LIMIT ) int aLimit );
+	
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aProfileParam
+	 * @param aAvatarSize
+	 * @param aPresenceType
+	 * @param aDirection
+	 * @param aOffset
+	 * @param aLimit
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@GET
+	Call<FriendReceiveRequestList> getFriendReceiveRequest(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_SORT ) String aSort, 
+			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
+			@Query( URL_PARAM_PRESENCETYPE ) String aPresenceType,
+			@Query( URL_PARAM_DIRECTION ) String aDirection,
+			@Query( URL_PARAM_OFFSET ) int aOffset,
+			@Query( URL_PARAM_LIMIT ) int aLimit );
+	
+	
 	/**
 	 * 
 	 * @param aUrl
@@ -312,4 +375,105 @@ public interface PsnApiService {
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
 			@Query( URL_PARAM_OFFSET ) int aOffset,
 			@Query( URL_PARAM_LIMIT ) int aLimit );
+	
+	
+	
+	/**
+	 *  send message
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aMessage
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@POST
+	Call<SendMessageResponse> createDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Body SendMessage aMessage );
+
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aMessage
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@PUT
+	Call<Void> markMessageAsSeen(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_MESSAGE_UID ) String aMessageId,
+			@Body MessageSeen aMessageSeen );
+
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aMessage
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@POST
+	Call<SendMessageResponse> addMessageToDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Body SendMessage aMessage );
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aDiscussionParam
+	 * @param aNpLanguage
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@GET
+	Call<DiscussionList> getListDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_PARAM_FIELDS ) String aDiscussionParam,
+			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
+			@Query( URL_PARAM_OFFSET ) int aOffset,
+			@Query( URL_PARAM_LIMIT ) int aLimit );
+	
+	
+	
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@GET
+	Call<Discussion> getDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Query( URL_PARAM_FIELDS ) String aDiscussionParam,
+			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
+			@Query( URL_PARAM_SINCE_MESSAGE_UID ) Long aSinceMessageUid);
+	
+	
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@DELETE
+	Call<Void> leaveFromDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation);
+	
+	/**
+	 * 
+	 * @param aUrl
+	 * @param aAuthorisation
+	 * @param aMemberList
+	 * @return
+	 */
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@POST
+	Call<SendMessageResponse> addMembersToDiscussion(@Url String aUrl,
+			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
+			@Body MemberList aMemberList);
+	
+	
+	
+	
 }

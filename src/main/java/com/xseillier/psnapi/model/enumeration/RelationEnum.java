@@ -19,6 +19,8 @@ public enum RelationEnum implements DataEnum<String>{
 	NO_RELATIONSHIP("no relationship"),
 	@SerializedName("requesting friend")
 	REQUESTING_FRIEND("requesting friend"),
+	@SerializedName("requested friend")
+	REQUESTED_FRIEND("requested friend"),
 	@SerializedName("blocked")
 	BLOCKED("blocked");
 	

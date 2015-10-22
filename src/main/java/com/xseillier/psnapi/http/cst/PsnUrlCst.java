@@ -24,6 +24,10 @@ public class PsnUrlCst {
 	public static final String URI_FRIEND_LIST             = "/v1/users/{onlineId}/friendList";
 	public static final String URI_DEL_FRIEND              = URI_FRIEND_LIST + "/{onlineFriendId}"; 
 	public static final String URI_ADD_FRIEND              = URI_DEL_FRIEND; 
+	
+	public static final String URI_GET_FRIEND_SENT_REQUEST     = "/v1/users/me/friendList/sentRequests";
+	public static final String URI_GET_FRIEND_RECEIVED_REQUEST = "/v1/users/me/friendList/receivedRequests";
+	
 	public static final String URI_FRIEND_DETAIL           = "/v1/users/{onlineId}/profile"; 
 	public static final String URI_MULTI_FRIEND_DETAIL     = "/v1/profiles"; 
 	public static final String URI_TROPHY_TITLES           = "/v1/trophyTitles";
@@ -33,5 +37,17 @@ public class PsnUrlCst {
 	public static final String URI_BLOCK_LIST_PROFILE      = "/v1/users/{onlineId}/blockList"; 
 	public static final String URI_BLOCK_PROFILE           = URI_BLOCK_LIST_PROFILE + "/{profileOnlineId}"; 
 	public static final String URI_UNBLOCK_PROFILE         = URI_BLOCK_PROFILE; 
+	
+	
+	public static final String URI_CREATE_DISCUSSION       = "/v1/messageGroups";
+	public static final String URI_GET_DISCUSSION_LIST     = "/v1/users/{onlineId}/messageGroups";
+
+	public static final String URI_GET_DISCUSSION          = "/v1/messageGroups/{discussionId}/messages";
+	public static final String URI_ADD_MSG_TO_DISCUSSION   = URI_GET_DISCUSSION;
+
+	public static final String URI_LEAVE_FROM_DISCUSSION      = "/v1/messageGroups/{discussionId}/users/{onlineId}";
+	public static final String URI_ADD_MEMBERS_TO_DISCUSSION  = "/v1/messageGroups/{discussionId}/users";
+	
+	public static final String URI_MARK_MESSAGE_AS_SEEN       = URI_GET_DISCUSSION;
 	
 }

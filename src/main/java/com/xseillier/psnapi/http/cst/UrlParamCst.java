@@ -26,8 +26,13 @@ public class UrlParamCst {
 	public static final String URL_PARAM_FIELDS                   = "fields";
 	public static final String URL_PARAM_SORT                     = "sort";
 	
+	
+	//TODO add profile param
 	public static final String URL_PARAM_AVATARSIZE               = "avatarSize";
-	public static final String URL_PARAM_AVATARSIZES               = "avatarSizes";
+	public static final String URL_PARAM_AVATARSIZES              = "avatarSizes";
+	
+	
+	public static final String URL_PARAM_DIRECTION				  = "direction";
 	
 	public static final String URL_PARAM_IMAGESIZE                = "imageSize";
 	public static final String URL_PARAM_PRESENCETYPE             = "presenceType";
@@ -36,11 +41,14 @@ public class UrlParamCst {
 	public static final String URL_PARAM_LIMIT                    = "limit";
 	public static final String URL_PARAM_NP_LANGUAGE              = "npLanguage";
 	public static final String URL_PARAM_PLATFORM                 = "platform";
-	
-	
+	public static final String URL_PARAM_SINCE_MESSAGE_UID		  = "sinceMessageUid";
+	public static final String URL_MESSAGE_UID                    = "messageUid";
+
 	public static final String URL_PARAM_USERNAME        = "j_username";
 	public static final String URL_PARAM_PASSWORD        = "j_password";
 	
+	public static final String PART_MESSAGE				 = "message";
+	public static final String PART_DISCUSSION_ID  	     = "discussionId";
 	
 	
 	public static final String PARAM_REQUESTED_WITH               = "com.scee.psxandroid";

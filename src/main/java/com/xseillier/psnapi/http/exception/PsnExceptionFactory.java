@@ -24,6 +24,12 @@ public class PsnExceptionFactory {
 		else if (AleadyFriendRequestedException.CODE == aPsnError.getCode() ) {
 			return new AleadyFriendRequestedException( aPsnError );
 		}
+		else if (AccessDeniedByResourceOwnershipException.CODE == aPsnError.getCode() ) {
+			return new AccessDeniedByResourceOwnershipException( aPsnError );
+		}
+		else if (BadRequestException.CODE == aPsnError.getCode() ) {
+			return new BadRequestException( aPsnError );
+		}
 		return new PsnErrorException( aPsnError );
 	}
 }

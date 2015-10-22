@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.xseillier.psnapi.model.enumeration.ImageSizeEnum;
 import com.xseillier.psnapi.model.param.enumeration.PlatformEnum;
+import com.xseillier.psnapi.model.param.enumeration.TrophySummaryOptionEnum;
 
 /**
  * This object is used to pass param to trophy request
@@ -16,12 +17,13 @@ public class TrophyParam {
 
 	
 	private Locale			    mLocale;
-	private List<ImageSizeEnum> mImageSizes    = new ArrayList<>();
-	private List<PlatformEnum>  mPlatfromEnums = new ArrayList<>();
+	private List<ImageSizeEnum> mImageSizes                    = new ArrayList<>();
+	private List<PlatformEnum>  mPlatfromEnums                 = new ArrayList<>();
+	private List<TrophySummaryOptionEnum> mTrophySummaryOption = new ArrayList<>();
 	
-	
-	public TrophyParam( Locale aLocale, List<ImageSizeEnum> aImageSizes, List<PlatformEnum> aPlatformEnums ){
+	public TrophyParam(  List<TrophySummaryOptionEnum> aTrophySummaryOption, List<ImageSizeEnum> aImageSizes, List<PlatformEnum> aPlatformEnums, Locale aLocale ){
 		mLocale = aLocale;
+		mTrophySummaryOption.addAll( aTrophySummaryOption );
 		mImageSizes.addAll( aImageSizes );
 		mPlatfromEnums.addAll( aPlatformEnums );
 	}
@@ -58,6 +60,16 @@ public class TrophyParam {
 		mPlatfromEnums.add( aPlatfromEnum );
 	}
 	
+	public List<TrophySummaryOptionEnum> getTrophySummaryOption() {
+		return mTrophySummaryOption;
+	}
+
+	public void setTrophySummaryOption(List<TrophySummaryOptionEnum> aTrophySummaryOption) {
+		mTrophySummaryOption = aTrophySummaryOption;
+	}
+	
+	
+
 	/**
 	 * ProfileRequestParam builder 
 	 * default ProfileOption : ProfileOptionEnum.ONLINE_ID
@@ -70,6 +82,7 @@ public class TrophyParam {
 		private Locale			    mLocale        = Locale.getDefault();
 		private List<ImageSizeEnum> mImageSizes    = new ArrayList<>();
 		private List<PlatformEnum>  mPlatfromEnums = new ArrayList<>();
+		private List<TrophySummaryOptionEnum> mTrophySummaryOption = new ArrayList<>();
 		
 		public TrophyParamBuilder() {		
 		}
@@ -84,13 +97,18 @@ public class TrophyParam {
 			return this;
 		}
 		
-		public TrophyParamBuilder addPlatfromEnums(PlatformEnum aPlatfromEnum) {
+		public TrophyParamBuilder addPlatfrom(PlatformEnum aPlatfromEnum) {
 			mPlatfromEnums.add( aPlatfromEnum );
 			return this;
 		}
 		
+		public TrophyParamBuilder addTrophySummaryOption(TrophySummaryOptionEnum aTrophySummaryOptionEnum) {
+			mTrophySummaryOption.add( aTrophySummaryOptionEnum );
+			return this;
+		}
+
 		public TrophyParam build() {
-			return new TrophyParam( mLocale, mImageSizes, mPlatfromEnums );
+			return new TrophyParam( mTrophySummaryOption, mImageSizes, mPlatfromEnums,mLocale );
 		}
 	}
 

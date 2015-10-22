@@ -13,13 +13,15 @@ import com.xseillier.psnapi.model.trophy.TrophySummary;
 */
 public class FriendProfile extends BasicProfile{
 	
-	private String mAboutMe;	
-	private List<String> mLanguagesUsed;
-	private RelationEnum mRelation;
-	private Presence mPresence;
+	private String        mAboutMe;	
+	private List<String>  mLanguagesUsed;
+	private RelationEnum  mRelation;
+	private Presence      mPresence;
 	private TrophySummary mTrophySummary;
-	private String mPanelBgc;
-	private String mPanelUrl;
+	private String        mPanelBgc;
+	private String        mPanelUrl;
+	private boolean       mIsOfficiallyVerified;
+	
 	
 //=============================================================================
 // Accessor
@@ -97,6 +99,16 @@ public class FriendProfile extends BasicProfile{
 				+ mPresence + ", mTrophySummary=" + mTrophySummary
 				+ ", mPanelBgc=" + mPanelBgc + ", mPanelUrl=" + mPanelUrl
 				+ ", toString()=" + super.toString() + "]";
+	}
+
+
+	public boolean isOfficiallyVerified() {
+		return mIsOfficiallyVerified;
+	}
+
+
+	public void setOfficiallyVerified(boolean aIsOfficiallyVerified) {
+		mIsOfficiallyVerified = aIsOfficiallyVerified;
 	}
 		
 }

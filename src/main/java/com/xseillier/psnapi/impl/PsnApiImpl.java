@@ -1,8 +1,13 @@
 package com.xseillier.psnapi.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,24 +30,37 @@ import com.xseillier.psnapi.http.exception.PsnErrorException;
 import com.xseillier.psnapi.http.exception.PsnExceptionFactory;
 import com.xseillier.psnapi.http.impl.LoginImpl;
 import com.xseillier.psnapi.http.interceptor.CountRequestInterceptor;
+import com.xseillier.psnapi.http.interceptor.LoggingInterceptor;
 import com.xseillier.psnapi.http.interceptor.RateLimiterInterceptor;
+import com.xseillier.psnapi.http.retrofit.converter.PsnMessagingFactory;
 import com.xseillier.psnapi.jsonparser.GsonParser;
 import com.xseillier.psnapi.model.AccessToken;
 import com.xseillier.psnapi.model.PsnContext;
 import com.xseillier.psnapi.model.PsnError;
 import com.xseillier.psnapi.model.ServiceUrl;
 import com.xseillier.psnapi.model.block.BlockList;
+import com.xseillier.psnapi.model.block.BlockPagination;
 import com.xseillier.psnapi.model.friend.FriendList;
+import com.xseillier.psnapi.model.friend.FriendPagination;
 import com.xseillier.psnapi.model.friend.FriendProfile;
+import com.xseillier.psnapi.model.friend.FriendReceiveRequestList;
+import com.xseillier.psnapi.model.friend.FriendSendRequestList;
 import com.xseillier.psnapi.model.friend.ProfileList;
-import com.xseillier.psnapi.model.param.BlockPaginationParam;
-import com.xseillier.psnapi.model.param.FriendPaginationParam;
+import com.xseillier.psnapi.model.messaging.Discussion;
+import com.xseillier.psnapi.model.messaging.DiscussionList;
+import com.xseillier.psnapi.model.messaging.DiscussionPagination;
+import com.xseillier.psnapi.model.messaging.MemberList;
+import com.xseillier.psnapi.model.messaging.SendMessage;
+import com.xseillier.psnapi.model.messaging.SendMessageResponse;
+import com.xseillier.psnapi.model.param.DiscussionParam;
+import com.xseillier.psnapi.model.param.MessageSeen;
 import com.xseillier.psnapi.model.param.ProfileParam;
+import com.xseillier.psnapi.model.param.ProfileV2Param;
 import com.xseillier.psnapi.model.param.RequestMessage;
-import com.xseillier.psnapi.model.param.TrophyPaginationParam;
 import com.xseillier.psnapi.model.param.TrophyParam;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsResponse;
+import com.xseillier.psnapi.model.trophy.TrophyPagination;
 import com.xseillier.psnapi.model.trophy.TrophyTitleList;
 import com.xseillier.psnapi.model.user.User;
 import com.xseillier.psnapi.properties.PsnApiProperties;
@@ -123,8 +141,24 @@ public class PsnApiImpl implements PsnApi {
 		}
 		if( DEBUG ) {
 			mOkHttpClient.interceptors().add( new CountRequestInterceptor() );
+			mOkHttpClient.interceptors().add( new LoggingInterceptor() );
 		}
+			
 	}
+	
+	
+	
+	/**
+	 * 
+	 * @param aHost
+	 * @param aPort
+	 * @throws UnknownHostException
+	 */
+	public void addProxy( String aHost, int aPort ) throws UnknownHostException{
+		Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(InetAddress.getByName( aHost ) , aPort ));	
+		mOkHttpClient.setProxy(proxy);
+	}
+	
 	
 	/**
 	 * init retrofit service
@@ -133,8 +167,9 @@ public class PsnApiImpl implements PsnApi {
 		
 		Retrofit oRetrofit = new Retrofit.Builder()
 		.client( mOkHttpClient )
+		.addConverterFactory( new PsnMessagingFactory( GsonParser.getGsonParserInstance() ) )
 		.addConverterFactory( GsonConverterFactory.create( GsonParser.getGsonParserInstance() ) )
-	    .baseUrl( PsnUrlCst.URL_BASE )
+		.baseUrl( PsnUrlCst.URL_BASE )
 	    .build();	
 		mPSNApiService = oRetrofit.create( PsnApiService.class );
 	}
@@ -266,7 +301,7 @@ public class PsnApiImpl implements PsnApi {
 	 * @throws PsnErrorException
 	 */
 	@Override
-	public FriendList getFriendList( String aOnlineId, ProfileParam aProfileParam, FriendPaginationParam aPagination ) throws IOException,AccessDeniedByPrivacyLevelException, PsnErrorException {
+	public FriendList getFriendList( String aOnlineId, ProfileParam aProfileParam, FriendPagination aPagination ) throws IOException,AccessDeniedByPrivacyLevelException, PsnErrorException {
 		
 		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_FRIEND_LIST;
 				
@@ -279,14 +314,14 @@ public class PsnApiImpl implements PsnApi {
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
 				aProfileParam.getPresenceType(),
 				aProfileParam.getFriendStatus().getData(),
-				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPaginationParam.LIMIT ) );
+				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPagination.LIMIT ) );
 		
 		Response<FriendList> oFriendListResponse = oFriendListCall.execute();
 	
 		FriendList oFriendList =  processResponse( oFriendListResponse );
 		
 		if( aPagination.getOffset() + aPagination.getLimit() <= oFriendList.getTotalResults() ) {
-			FriendPaginationParam oNextPaginationParam = new FriendPaginationParam( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			FriendPagination oNextPaginationParam = new FriendPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
 			oFriendList.setNextPagination( oNextPaginationParam );
 		}
 				
@@ -316,6 +351,22 @@ public class PsnApiImpl implements PsnApi {
 	
 		return processResponse( oFriendResponse  );
 		
+	}
+	
+	
+
+	/**
+	 * 
+	 * @param aOnlineId
+	 * @param aProfileParam
+	 * @return
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	@Override
+	public FriendProfile getFriendDetailV2(String aOnlineId, ProfileV2Param aProfileParam) throws IOException, PsnErrorException {
+		// TODO a completer
+		throw new UnsupportedOperationException("Not Implemented");
 	}
 	
 	/**
@@ -404,6 +455,73 @@ public class PsnApiImpl implements PsnApi {
 	
 		processResponse( oCall.execute() );	
 	}
+
+	
+	/**
+	 * @param aProfileParam
+	 * @param aPagination
+	 */
+	@Override
+	public FriendSendRequestList getFriendSendRequest( ProfileParam aProfileParam, FriendPagination aPagination) throws IOException, PsnErrorException {
+		
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_GET_FRIEND_SENT_REQUEST;
+		
+		Call<FriendSendRequestList> oFriendSendRequestListCall = mPSNApiService.getFriendSendRequest(
+				oBaseUrl,
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
+				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
+				"requestedDate",
+				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,
+				aProfileParam.getPresenceType(),
+				"desc", 
+				aPagination.getOffset(),
+				Math.min( aPagination.getLimit(), aPagination.LIMIT ) );
+		
+		Response<FriendSendRequestList> oFriendSendRequestListResponse = oFriendSendRequestListCall.execute();
+	
+		FriendSendRequestList oFriendSendRequestList =  processResponse( oFriendSendRequestListResponse );
+		
+		if( aPagination.getOffset() + aPagination.getLimit() <= oFriendSendRequestList.getTotalResults() ) {
+			FriendPagination oNextPaginationParam = new FriendPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			oFriendSendRequestList.setNextPagination( oNextPaginationParam );
+		}
+				
+		return oFriendSendRequestList;
+	}
+
+	
+	/**
+	 * @param aProfileParam
+	 * @param aPagination
+	 */
+	@Override
+	public FriendReceiveRequestList getFriendReceiveRequest( ProfileParam aProfileParam, FriendPagination aPagination) throws IOException, PsnErrorException {
+		
+		
+		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_GET_FRIEND_RECEIVED_REQUEST;
+		
+		Call<FriendReceiveRequestList> oFriendReceiveRequestListCall = mPSNApiService.getFriendReceiveRequest(
+				oBaseUrl,
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
+				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
+				"requestedDate",
+				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,
+				aProfileParam.getPresenceType(),
+				"desc", 
+				aPagination.getOffset(),
+				Math.min( aPagination.getLimit(), aPagination.LIMIT ) );
+		
+		Response<FriendReceiveRequestList> oFriendReceiveRequestListResponse = oFriendReceiveRequestListCall.execute();
+	
+		FriendReceiveRequestList oFriendReceiveRequestList =  processResponse( oFriendReceiveRequestListResponse );
+		
+		if( aPagination.getOffset() + aPagination.getLimit() <= oFriendReceiveRequestList.getTotalResults() ) {
+			FriendPagination oNextPaginationParam = new FriendPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			oFriendReceiveRequestList.setNextPagination( oNextPaginationParam );
+		}
+				
+		return oFriendReceiveRequestList;
+	}
 	
 	/**
 	 * return trophy base friend profile
@@ -469,7 +587,7 @@ public class PsnApiImpl implements PsnApi {
 	 * 
 	 */
 	@Override
-	public BlockList getBlockProfileList(String aYourOnlineId, ProfileParam aProfileParam, BlockPaginationParam aPagination)
+	public BlockList getBlockProfileList(String aYourOnlineId, ProfileParam aProfileParam, BlockPagination aPagination)
 			throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException {
 		
 		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_BLOCK_LIST_PROFILE;
@@ -481,14 +599,14 @@ public class PsnApiImpl implements PsnApi {
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"onlineId",
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
-				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPaginationParam.LIMIT ) );
+				aPagination.getOffset(),  Math.min( aPagination.getLimit(), FriendPagination.LIMIT ) );
 		
 		Response<BlockList> oBlockListResponse = oBlockListCall.execute();
 	
 		BlockList oBlockList =  processResponse( oBlockListResponse );
 		
 		if( aPagination.getOffset() + aPagination.getLimit() <= oBlockList.getTotalResults() ) {
-			BlockPaginationParam oNextPaginationParam = new BlockPaginationParam( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			BlockPagination oNextPaginationParam = new BlockPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
 			oBlockList.setNextPagination( oNextPaginationParam );
 		}
 				
@@ -497,7 +615,7 @@ public class PsnApiImpl implements PsnApi {
 
 //=============================================================================
 //
-// Trohpy METHODS
+// Trophy METHODS
 //
 //=============================================================================
 
@@ -505,26 +623,26 @@ public class PsnApiImpl implements PsnApi {
 	 * 
 	 */
 	@Override
-	public TrophyTitleList getTrophyList(TrophyParam aTrophyParam, TrophyPaginationParam aPagination ) throws IOException,
+	public TrophyTitleList getTrophyList(TrophyParam aTrophyParam, TrophyPagination aPagination ) throws IOException,
 			PsnErrorException {
 		
 		String oBaseUrl = getTrophyBaseUrl().getUrl() + PsnUrlCst.URI_TROPHY_TITLES;
 		/* TODO supprimer les valeur en dure*/
 		Call<TrophyTitleList> oTrophyTitleListCall  = mPSNApiService.getTrophyList(oBaseUrl,
 				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
-				"@default",
+				UrlUtils.joinDataEnum( aTrophyParam.getTrophySummaryOption()),
 				aTrophyParam.getLocale().getCountry().toLowerCase(),
 				UrlUtils.joinDataEnum( aTrophyParam.getImageSize() ),
 				UrlUtils.joinDataEnum( aTrophyParam.getPlatfromEnums() ),
 				aPagination.getOffset(),
-				Math.min( aPagination.getLimit(), TrophyPaginationParam.LIMIT ) );
+				Math.min( aPagination.getLimit(), TrophyPagination.LIMIT ) );
 		
 		Response<TrophyTitleList> oTrophyTitleListResponse = oTrophyTitleListCall.execute();
 	
 		TrophyTitleList oTrophyTitleList =  processResponse( oTrophyTitleListResponse );
 		
 		if( aPagination.getOffset() + aPagination.getLimit() <= oTrophyTitleList.getTotalResults() ) {
-			TrophyPaginationParam oNextPaginationParam = new TrophyPaginationParam( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			TrophyPagination oNextPaginationParam = new TrophyPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
 			oTrophyTitleList.setNextPagination( oNextPaginationParam );
 		}
 		
@@ -565,7 +683,7 @@ public class PsnApiImpl implements PsnApi {
 		
 		Call<TrophyGroupsDetailsResponse> oTrophyGroupsDetailsResponseCall  = mPSNApiService.getTrophyGroupsDetail( UrlUtils.injectDataInUrl(oBaseUrl, aDataUrl ),
 				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
-				"@default,trophyRare,trophyEarnedRate",
+				UrlUtils.joinDataEnum( aTrophyParam.getTrophySummaryOption() ),
 				aTrophyParam.getLocale().getCountry().toLowerCase(),
 				UrlUtils.joinDataEnum( aTrophyParam.getImageSize() ) );
 		
@@ -626,5 +744,194 @@ public class PsnApiImpl implements PsnApi {
 		}
 		return null;
 	}
+	
+//=============================================================================
+//
+// MESSAGING METHODS
+//	
+//=============================================================================
+	
+	
+	
+	@Override
+	public SendMessageResponse createDiscussion(List<String> aOnlineIdList, String aMessage) throws IOException,
+			PsnErrorException {
+	
+		return createDiscussion( aOnlineIdList, aMessage, null );
+	}
+	/**
+	 * send message
+	 * @params aMessage
+	 */
+	@Override
+	public SendMessageResponse createDiscussion(List<String> aOnlineIdList, String aMessage, File aImage ) throws IOException,
+			PsnErrorException {
+		
+		SendMessage oStringMessage = new SendMessage( aOnlineIdList, aMessage );
+		if( aImage != null ) {
+			oStringMessage.setImage( aImage  );
+		}
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_CREATE_DISCUSSION;		
+		Call<SendMessageResponse> oSendMessageCall  = mPSNApiService.createDiscussion(oBaseUrl, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), oStringMessage );
+				
+		return processResponse( oSendMessageCall.execute() );
+	}
+
+	
+
+	@Override
+	public void markMessageAsSeen(List<Long> aMessageUidList, String aDiscussionId) throws IOException, PsnErrorException {
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_MARK_MESSAGE_AS_SEEN;		
+		
+		Call<Void> oVoidCall = mPSNApiService.markMessageAsSeen(
+				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
+				UrlUtils.joinList( aMessageUidList ),
+				new MessageSeen() );
+		
+		processResponse( oVoidCall.execute() );
+	}
+	
+	
+
+	@Override
+	public SendMessageResponse addMessageToDiscussion(String aDiscussionId , String aMessage ) throws IOException, PsnErrorException {
+		return addMessageToDiscussion( aDiscussionId, aMessage, null );
+	}
+	
+	/**
+	 * @param aMessage
+	 * @param aDiscussionId
+	 * @return SimpleDiscussion
+	 */
+	@Override
+	public SendMessageResponse addMessageToDiscussion(String aDiscussionId , String aMessage, File aImage) throws IOException, PsnErrorException {
+	
+		this.addProxy("192.168.1.132", 8080);
+		
+		SendMessage oStringMessage = new SendMessage( aMessage );
+		if( aImage != null ){
+			oStringMessage.setImage( aImage );
+		}
+		
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_ADD_MSG_TO_DISCUSSION;		
+		Call<SendMessageResponse> oSendMessageCall  = mPSNApiService.addMessageToDiscussion(
+				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
+				oStringMessage );
+				
+		return processResponse( oSendMessageCall.execute() );
+	}
+	
+	/**
+	 * @param aYourOnlineId
+	 * @param aDiscussionParam
+	 * @return
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	@Override
+	public DiscussionList getDiscussionList(String aYourOnlineId, DiscussionParam aDiscussionParam, DiscussionPagination aPagination ) throws IOException,
+			PsnErrorException {
+		
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_GET_DISCUSSION_LIST;		
+						
+		Call<DiscussionList> oDiscussionCall = mPSNApiService.getListDiscussion(UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.URL_PARAM_ONLINE_ID , aYourOnlineId ), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
+				UrlUtils.joinDataEnum( aDiscussionParam.getDiscussionParams() ),
+				aDiscussionParam.getLocale().getCountry().toLowerCase(),
+				aPagination.getOffset(),
+				Math.min( aPagination.getLimit(), TrophyPagination.LIMIT ));
+				
+		Response<DiscussionList> oDiscussionListResponse = oDiscussionCall.execute();
+		
+		DiscussionList oDiscussionList =  processResponse( oDiscussionListResponse );
+		
+		if( aPagination.getOffset() + aPagination.getLimit() <= oDiscussionList.getTotalResults() ) {
+			DiscussionPagination oNextPaginationParam = new DiscussionPagination( aPagination.getOffset() + aPagination.getLimit(), aPagination.getLimit() );
+			oDiscussionList.setNextPagination( oNextPaginationParam );
+		}
+		
+		return oDiscussionList;
+		
+	}
+
+	
+	/**
+	 * @param aDiscussionParam
+	 * @param aDiscussionId
+	 */
+	@Override
+	public Discussion getDiscussion(DiscussionParam aDiscussionParam,
+			String aDiscussionId) throws IOException, PsnErrorException {
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_GET_DISCUSSION;		
+		
+		Call<Discussion> oDiscussionCall = mPSNApiService.getDiscussion(UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID ,  aDiscussionId ), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
+				UrlUtils.joinDataEnum( aDiscussionParam.getDiscussionParams() ),
+				aDiscussionParam.getLocale().getCountry().toLowerCase(),
+				aDiscussionParam.getSinceMessageUid() );
+		
+		return processResponse( oDiscussionCall.execute());
+	}
+	
+	/**
+	 * @param aYourOnlineId
+	 * @param aDiscussionId
+	 */
+	@Override
+	public void leaveFromDiscussion(String aYourOnlineId, String aDiscussionId) throws IOException, PsnErrorException {
+		
+
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_LEAVE_FROM_DISCUSSION;		
+		
+		Map<String,String> aDataUrl = new HashMap<>();
+		aDataUrl.put( UrlParamCst.URL_PARAM_ONLINE_ID, aYourOnlineId);
+		aDataUrl.put( UrlParamCst.PART_DISCUSSION_ID, aDiscussionId);
+				 
+		Call<Void> oVoidCall = mPSNApiService.leaveFromDiscussion(
+				UrlUtils.injectDataInUrl(oBaseUrl, aDataUrl), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		
+		 processResponse( oVoidCall.execute());
+	}
+
+	/**
+	 * @param aOnlineIdList
+	 * @param aDiscussionId
+	 * @return SimpleDiscussion
+	 */
+	@Override
+	public SendMessageResponse addMemberToDiscussion(List<String> aOnlineIdList,
+			String aDiscussionId) throws IOException, PsnErrorException {
+	
+		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_ADD_MEMBERS_TO_DISCUSSION;		
+			
+		MemberList oMemberList = new MemberList();
+		for( String oOnlineId : aOnlineIdList ) {
+			oMemberList.addMember( oOnlineId );
+		}
+		
+		Call<SendMessageResponse> oSimpleDiscussionCall = mPSNApiService.addMembersToDiscussion(
+				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
+				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
+				oMemberList);
+		
+		return  processResponse( oSimpleDiscussionCall.execute());
+	}
+	
+	/**
+	 * return trophy base friend profile
+	 * @return
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	private ServiceUrl getMessagingBaseUrl() throws IOException, PsnErrorException {
+		
+		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_GROUP_MESSAGING, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Response<ServiceUrl> oServiceUrlResponse = oServiceUrlCall.execute();	
+		return processResponse( oServiceUrlResponse );
+	}
+
 
 }

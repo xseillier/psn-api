@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.xseillier.psnapi.enumeration.DataEnum;
+import com.xseillier.psnapi.enumeration.ProfileV2DataEnum;
 import com.xseillier.psnapi.model.AccessToken;
+import com.xseillier.psnapi.model.param.ProfileV2Param;
 
 /**
  *
@@ -83,4 +85,51 @@ public class UrlUtils {
 			return oResponse.toString();
 	}
 	
+	/**
+	 * 
+	 * @param aProfileV2Param
+	 * @return
+	 */
+	public static String createProfileV2field( ProfileV2Param aProfileV2Param ) {
+		StringBuffer oResponse = new StringBuffer();
+		
+		oResponse.append( joinDataEnum( aProfileV2Param.getProfileParams()) );
+		
+		if( aProfileV2Param.getPresencesParams().size() > 0 )
+		{
+			oResponse.append(",");
+			oResponse.append( joinProfileV2DataEnum( aProfileV2Param.getPresencesParams() ) );
+		}
+		
+		if( aProfileV2Param.getTrophySummaryParams().size() > 0 )
+		{
+			oResponse.append(",");
+			oResponse.append( joinProfileV2DataEnum( aProfileV2Param.getTrophySummaryParams() ) );
+		}
+		
+		if( aProfileV2Param.getPersonalDetailParams().size() > 0 )
+		{
+			oResponse.append(",");
+			oResponse.append( joinProfileV2DataEnum( aProfileV2Param.getPersonalDetailParams() ) );
+		}
+		
+		return oResponse.toString();
+	}
+	
+	/**
+	 * 
+	 * @param alist
+	 * @return
+	 */
+	private static String joinProfileV2DataEnum(  List< ? extends ProfileV2DataEnum<String> > alist ) {
+		if( alist == null || alist.size() == 0 )
+			return null;
+		
+		StringBuffer oResponse = new StringBuffer();
+		oResponse.append( alist.get(0).getParamName() );
+		oResponse.append( "(");	
+		oResponse.append( joinDataEnum( alist, "," ) );
+		oResponse.append( ")");
+		return oResponse.toString();		
+	}
 }

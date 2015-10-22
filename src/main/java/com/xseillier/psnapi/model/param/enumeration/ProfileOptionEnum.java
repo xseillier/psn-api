@@ -23,7 +23,9 @@ public enum ProfileOptionEnum implements DataEnum<String>{
 	NP_TITLE_ICON_URL("npTitleIconUrl"),
 	DEFAULT("@default"),    
 	MUTUAL_FRIENDS_COUNT("mutualFriendsCount"),
-	PROFILE("profile");
+	PROFILE("profile"),
+	PERSONAL_DETAIL_DISPLAY_NAME("personalDetail.displayName"),
+	REQUESTED_DATE("requestedDate");
 	
 	private String mData;
 	
