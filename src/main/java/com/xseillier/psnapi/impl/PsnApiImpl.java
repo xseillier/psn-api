@@ -807,8 +807,6 @@ public class PsnApiImpl implements PsnApi {
 	@Override
 	public SendMessageResponse addMessageToDiscussion(String aDiscussionId , String aMessage, File aImage) throws IOException, PsnErrorException {
 	
-		this.addProxy("192.168.1.132", 8080);
-		
 		SendMessage oStringMessage = new SendMessage( aMessage );
 		if( aImage != null ){
 			oStringMessage.setImage( aImage );
