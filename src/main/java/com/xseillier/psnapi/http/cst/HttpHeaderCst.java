@@ -15,4 +15,7 @@ public class HttpHeaderCst {
 	  
 	public static final String HEADER_CONTENT_TYPE      = "Content-Type";
 	public static final String TYPE_MINE_JSON           = "application/json";
+	
+	public static final String HEADER_ADD_AUTHORIZATION = "X-Add-Authorization";
+	
 }

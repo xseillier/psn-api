@@ -308,7 +308,6 @@ public class PsnApiImpl implements PsnApi {
 		/* TODO supprimer les valeur en dur*/
 		Call<FriendList> oFriendListCall  = mPSNApiService.getFriendList( UrlUtils.injectDataInUrl(oBaseUrl, 
 				UrlParamCst.URL_PARAM_ONLINE_ID , aOnlineId ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"onlineId",
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
@@ -343,7 +342,6 @@ public class PsnApiImpl implements PsnApi {
 		 
 		Call<FriendProfile> oFriendCall  = mPSNApiService.getFriendDetail( UrlUtils.injectDataInUrl(oBaseUrl,
 				UrlParamCst.URL_PARAM_ONLINE_ID, aOnlineId ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null );
 		
@@ -383,7 +381,6 @@ public class PsnApiImpl implements PsnApi {
 		String oBaseUrl = getFriendProfileBaseUrl().getUrl() + PsnUrlCst.URI_MULTI_FRIEND_DETAIL;
 		 
 		Call<ProfileList> oProfileListCall  = mPSNApiService.getMultiFriendDetail( oBaseUrl,
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				UrlUtils.joinList( aOnlineId ), 
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null );
@@ -411,8 +408,7 @@ public class PsnApiImpl implements PsnApi {
 		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_ID, aOnlineId);
 		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_FRIEND_ID, aFriendOnlineId);
 		
-		Call<Void> oCall  = mPSNApiService.delFriend( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<Void> oCall  = mPSNApiService.delFriend( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ) );
 	
 		processResponse( oCall.execute() );	
 	}
@@ -450,7 +446,6 @@ public class PsnApiImpl implements PsnApi {
 		oMapParam.put(UrlParamCst.URL_PARAM_ONLINE_FRIEND_ID, aFriendOnlineId);
 		
 		Call<Void> oCall  = mPSNApiService.addFriend( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				new RequestMessage( aRequestMessage) );
 	
 		processResponse( oCall.execute() );	
@@ -468,7 +463,6 @@ public class PsnApiImpl implements PsnApi {
 		
 		Call<FriendSendRequestList> oFriendSendRequestListCall = mPSNApiService.getFriendSendRequest(
 				oBaseUrl,
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"requestedDate",
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,
@@ -502,7 +496,6 @@ public class PsnApiImpl implements PsnApi {
 		
 		Call<FriendReceiveRequestList> oFriendReceiveRequestListCall = mPSNApiService.getFriendReceiveRequest(
 				oBaseUrl,
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"requestedDate",
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,
@@ -531,7 +524,7 @@ public class PsnApiImpl implements PsnApi {
 	 */
 	private ServiceUrl getFriendProfileBaseUrl() throws IOException, PsnErrorException {
 		
-		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_USER_PROFILE, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_USER_PROFILE );
 		Response<ServiceUrl> oServiceUrlResponse = oServiceUrlCall.execute();
 		
 		return processResponse( oServiceUrlResponse );
@@ -555,8 +548,7 @@ public class PsnApiImpl implements PsnApi {
 		oMapParam.put(UrlParamCst.URL_PARAM_PROFILE_ONLINE_ID, aProfileOnlineId);
 		
 		
-		Call<Void> oCall  = mPSNApiService.blockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<Void> oCall  = mPSNApiService.blockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ) );
 	
 		processResponse( oCall.execute() );	
 		
@@ -572,8 +564,7 @@ public class PsnApiImpl implements PsnApi {
 		oMapParam.put(UrlParamCst.URL_PARAM_PROFILE_ONLINE_ID, aProfileOnlineId);
 		
 		
-		Call<Void> oCall  = mPSNApiService.unblockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<Void> oCall  = mPSNApiService.unblockProfile( UrlUtils.injectDataInUrl(oBaseUrl, oMapParam ) );
 	
 		processResponse( oCall.execute() );	
 	}
@@ -595,7 +586,6 @@ public class PsnApiImpl implements PsnApi {
 		/* TODO supprimer les valeur en dur*/
 		Call<BlockList> oBlockListCall  = mPSNApiService.getBlockProfileList( UrlUtils.injectDataInUrl(oBaseUrl, 
 				UrlParamCst.URL_PARAM_ONLINE_ID , aYourOnlineId ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) ,
 				UrlUtils.joinDataEnum( aProfileParam.getProfileParams() ),
 				"onlineId",
 				( aProfileParam.getAvatarSize() != null && aProfileParam.getAvatarSize().size() > 0 )? UrlUtils.joinDataEnum( aProfileParam.getAvatarSize() ): null,			
@@ -629,7 +619,6 @@ public class PsnApiImpl implements PsnApi {
 		String oBaseUrl = getTrophyBaseUrl().getUrl() + PsnUrlCst.URI_TROPHY_TITLES;
 		/* TODO supprimer les valeur en dure*/
 		Call<TrophyTitleList> oTrophyTitleListCall  = mPSNApiService.getTrophyList(oBaseUrl,
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				UrlUtils.joinDataEnum( aTrophyParam.getTrophySummaryOption()),
 				aTrophyParam.getLocale().getCountry().toLowerCase(),
 				UrlUtils.joinDataEnum( aTrophyParam.getImageSize() ),
@@ -659,7 +648,6 @@ public class PsnApiImpl implements PsnApi {
 		
 		/* TODO supprimer les valeur en dure*/
 		Call<TrophyGroupsResponse> oTrophyGroupsResponseCall  = mPSNApiService.getTrophyGroups( UrlUtils.injectDataInUrl(oBaseUrl, "gameId", aNameId),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				"@default",
 				aTrophyParam.getLocale().getCountry().toLowerCase(),
 				UrlUtils.joinDataEnum( aTrophyParam.getImageSize() ) );
@@ -682,7 +670,6 @@ public class PsnApiImpl implements PsnApi {
 		aDataUrl.put("trophyGroupId", aTrophyGroupId);
 		
 		Call<TrophyGroupsDetailsResponse> oTrophyGroupsDetailsResponseCall  = mPSNApiService.getTrophyGroupsDetail( UrlUtils.injectDataInUrl(oBaseUrl, aDataUrl ),
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				UrlUtils.joinDataEnum( aTrophyParam.getTrophySummaryOption() ),
 				aTrophyParam.getLocale().getCountry().toLowerCase(),
 				UrlUtils.joinDataEnum( aTrophyParam.getImageSize() ) );
@@ -702,7 +689,7 @@ public class PsnApiImpl implements PsnApi {
 	 */
 	private ServiceUrl getTrophyBaseUrl() throws IOException, PsnErrorException {
 		
-		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_TROPHY, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_TROPHY );
 		Response<ServiceUrl> oServiceUrlResponse = oServiceUrlCall.execute();
 		
 		return processResponse( oServiceUrlResponse );
@@ -772,7 +759,8 @@ public class PsnApiImpl implements PsnApi {
 			oStringMessage.setImage( aImage  );
 		}
 		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_CREATE_DISCUSSION;		
-		Call<SendMessageResponse> oSendMessageCall  = mPSNApiService.createDiscussion(oBaseUrl, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), oStringMessage );
+		Call<SendMessageResponse> oSendMessageCall  = mPSNApiService.createDiscussion(oBaseUrl,
+																					  oStringMessage );
 				
 		return processResponse( oSendMessageCall.execute() );
 	}
@@ -785,7 +773,6 @@ public class PsnApiImpl implements PsnApi {
 		
 		Call<Void> oVoidCall = mPSNApiService.markMessageAsSeen(
 				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				UrlUtils.joinList( aMessageUidList ),
 				new MessageSeen() );
 		
@@ -815,7 +802,6 @@ public class PsnApiImpl implements PsnApi {
 		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_ADD_MSG_TO_DISCUSSION;		
 		Call<SendMessageResponse> oSendMessageCall  = mPSNApiService.addMessageToDiscussion(
 				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				oStringMessage );
 				
 		return processResponse( oSendMessageCall.execute() );
@@ -835,7 +821,6 @@ public class PsnApiImpl implements PsnApi {
 		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_GET_DISCUSSION_LIST;		
 						
 		Call<DiscussionList> oDiscussionCall = mPSNApiService.getListDiscussion(UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.URL_PARAM_ONLINE_ID , aYourOnlineId ), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
 				UrlUtils.joinDataEnum( aDiscussionParam.getDiscussionParams() ),
 				aDiscussionParam.getLocale().getCountry().toLowerCase(),
 				aPagination.getOffset(),
@@ -865,7 +850,6 @@ public class PsnApiImpl implements PsnApi {
 		String oBaseUrl = getMessagingBaseUrl().getUrl() + PsnUrlCst.URI_GET_DISCUSSION;		
 		
 		Call<Discussion> oDiscussionCall = mPSNApiService.getDiscussion(UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID ,  aDiscussionId ), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ), 
 				UrlUtils.joinDataEnum( aDiscussionParam.getDiscussionParams() ),
 				aDiscussionParam.getLocale().getCountry().toLowerCase(),
 				aDiscussionParam.getSinceMessageUid() );
@@ -888,8 +872,7 @@ public class PsnApiImpl implements PsnApi {
 		aDataUrl.put( UrlParamCst.PART_DISCUSSION_ID, aDiscussionId);
 				 
 		Call<Void> oVoidCall = mPSNApiService.leaveFromDiscussion(
-				UrlUtils.injectDataInUrl(oBaseUrl, aDataUrl), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+				UrlUtils.injectDataInUrl(oBaseUrl, aDataUrl) );
 		
 		 processResponse( oVoidCall.execute());
 	}
@@ -912,7 +895,6 @@ public class PsnApiImpl implements PsnApi {
 		
 		Call<SendMessageResponse> oSimpleDiscussionCall = mPSNApiService.addMembersToDiscussion(
 				UrlUtils.injectDataInUrl(oBaseUrl, UrlParamCst.PART_DISCUSSION_ID, aDiscussionId), 
-				UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ),
 				oMemberList);
 		
 		return  processResponse( oSimpleDiscussionCall.execute());
@@ -926,7 +908,7 @@ public class PsnApiImpl implements PsnApi {
 	 */
 	private ServiceUrl getMessagingBaseUrl() throws IOException, PsnErrorException {
 		
-		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_GROUP_MESSAGING, UrlUtils.createAuthHeader( mPsnContext.getAccessToken() ) );
+		Call<ServiceUrl> oServiceUrlCall  = mPSNApiService.getUrl( PsnUrlCst.BASE_URL_GROUP_MESSAGING );
 		Response<ServiceUrl> oServiceUrlResponse = oServiceUrlCall.execute();	
 		return processResponse( oServiceUrlResponse );
 	}

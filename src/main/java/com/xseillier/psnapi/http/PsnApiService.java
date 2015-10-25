@@ -1,6 +1,6 @@
 package com.xseillier.psnapi.http;
 
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_AUTHORIZATION;
+import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_ADD_AUTHORIZATION;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_CONTENT_TYPE;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_REQUESTED_WITH;
 import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_X_NP_ACCESS_TOKEN;
@@ -53,8 +53,8 @@ import com.xseillier.psnapi.model.friend.ProfileList;
 import com.xseillier.psnapi.model.messaging.Discussion;
 import com.xseillier.psnapi.model.messaging.DiscussionList;
 import com.xseillier.psnapi.model.messaging.MemberList;
-import com.xseillier.psnapi.model.messaging.SendMessageResponse;
 import com.xseillier.psnapi.model.messaging.SendMessage;
+import com.xseillier.psnapi.model.messaging.SendMessageResponse;
 import com.xseillier.psnapi.model.param.MessageSeen;
 import com.xseillier.psnapi.model.param.RequestMessage;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
@@ -119,9 +119,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
-	Call<ServiceUrl> getUrl(@Url String aUrl, @Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	Call<ServiceUrl> getUrl(@Url String aUrl );
 	
 	
 	/**
@@ -147,10 +147,9 @@ public interface PsnApiService {
 	 * @param aLimit
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendList> getFriendList(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
@@ -167,10 +166,9 @@ public interface PsnApiService {
 	 * @param aProfileParam
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendProfile> getFriendDetail(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
 	
@@ -184,10 +182,9 @@ public interface PsnApiService {
 	 * @param aProfileParam
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<ProfileList> getMultiFriendDetail(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_ONLINE_ID ) String aOnlineIds,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
@@ -200,10 +197,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@DELETE
-	Call<Void> delFriend(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	Call<Void> delFriend(@Url String aUrl );
 	
 	
 	
@@ -213,10 +209,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<Void> addFriend(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Body RequestMessage aRequestMessage);
 	
 	
@@ -233,10 +228,9 @@ public interface PsnApiService {
 	 * @param aLimit
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendSendRequestList> getFriendSendRequest(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
@@ -258,10 +252,9 @@ public interface PsnApiService {
 	 * @param aLimit
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON , HEADER_ADD_AUTHORIZATION +": "+ "add" } )
 	@GET
 	Call<FriendReceiveRequestList> getFriendReceiveRequest(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
@@ -283,10 +276,9 @@ public interface PsnApiService {
 	 * @param aLimit
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<TrophyTitleList> getTrophyList(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aTrophyParam,
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_IMAGESIZE ) String aImageSize,
@@ -305,10 +297,9 @@ public interface PsnApiService {
 	 * @param aImageSize
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<TrophyGroupsResponse> getTrophyGroups(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aTrophyParam,
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_IMAGESIZE ) String aImageSize );
@@ -323,10 +314,9 @@ public interface PsnApiService {
 	 * @param aImageSize
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<TrophyGroupsDetailsResponse> getTrophyGroupsDetail(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aTrophyParam,
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_IMAGESIZE ) String aImageSize );
@@ -338,10 +328,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
-	Call<Void> blockProfile(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	Call<Void> blockProfile(@Url String aUrl );
 	
 	/**
 	 * 
@@ -349,10 +338,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@DELETE
-	Call<Void> unblockProfile(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation );
+	Call<Void> unblockProfile(@Url String aUrl );
 
 	
 	/**
@@ -366,10 +354,9 @@ public interface PsnApiService {
 	 * @param aLimit
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<BlockList> getBlockProfileList(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
@@ -385,10 +372,9 @@ public interface PsnApiService {
 	 * @param aMessage
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<SendMessageResponse> createDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Body SendMessage aMessage );
 
 	
@@ -399,10 +385,9 @@ public interface PsnApiService {
 	 * @param aMessage
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@PUT
 	Call<Void> markMessageAsSeen(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_MESSAGE_UID ) String aMessageId,
 			@Body MessageSeen aMessageSeen );
 
@@ -414,10 +399,9 @@ public interface PsnApiService {
 	 * @param aMessage
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<SendMessageResponse> addMessageToDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Body SendMessage aMessage );
 	
 	/**
@@ -428,10 +412,9 @@ public interface PsnApiService {
 	 * @param aNpLanguage
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<DiscussionList> getListDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aDiscussionParam,
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_OFFSET ) int aOffset,
@@ -439,10 +422,9 @@ public interface PsnApiService {
 	
 	
 	
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<Discussion> getDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Query( URL_PARAM_FIELDS ) String aDiscussionParam,
 			@Query( URL_PARAM_NP_LANGUAGE ) String aNpLanguage,
 			@Query( URL_PARAM_SINCE_MESSAGE_UID ) Long aSinceMessageUid);
@@ -455,10 +437,9 @@ public interface PsnApiService {
 	 * @param aAuthorisation
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@DELETE
-	Call<Void> leaveFromDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation);
+	Call<Void> leaveFromDiscussion(@Url String aUrl );
 	
 	/**
 	 * 
@@ -467,10 +448,9 @@ public interface PsnApiService {
 	 * @param aMemberList
 	 * @return
 	 */
-	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH } )
+	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<SendMessageResponse> addMembersToDiscussion(@Url String aUrl,
-			@Header( HEADER_AUTHORIZATION ) String aAuthorisation,
 			@Body MemberList aMemberList);
 	
 	
