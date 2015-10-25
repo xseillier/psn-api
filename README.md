@@ -35,6 +35,8 @@ You can find classes in package package com.xseillier.psnapi.duid, all you need 
 ### Version
 0.3 Beta
 
+### Bug
+   
 ### Next
 * add more doc
 

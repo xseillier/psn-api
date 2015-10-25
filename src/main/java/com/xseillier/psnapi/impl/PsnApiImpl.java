@@ -29,6 +29,7 @@ import com.xseillier.psnapi.http.exception.LoginException;
 import com.xseillier.psnapi.http.exception.PsnErrorException;
 import com.xseillier.psnapi.http.exception.PsnExceptionFactory;
 import com.xseillier.psnapi.http.impl.LoginImpl;
+import com.xseillier.psnapi.http.interceptor.AuthorisationInterceptor;
 import com.xseillier.psnapi.http.interceptor.CountRequestInterceptor;
 import com.xseillier.psnapi.http.interceptor.LoggingInterceptor;
 import com.xseillier.psnapi.http.interceptor.RateLimiterInterceptor;
@@ -136,6 +137,9 @@ public class PsnApiImpl implements PsnApi {
 		CookieManager cookieManager = new CookieManager();
 		cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
 		mOkHttpClient.setCookieHandler(cookieManager);
+		
+		mOkHttpClient.interceptors().add( new AuthorisationInterceptor( this ) );
+		
 		if( aLimitRate > 0 ) {
 			mOkHttpClient.interceptors().add( new RateLimiterInterceptor( aLimitRate ) );
 		}

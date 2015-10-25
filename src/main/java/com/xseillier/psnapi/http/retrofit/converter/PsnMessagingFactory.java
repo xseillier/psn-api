@@ -26,7 +26,7 @@ private Gson mGson;
 	 public Converter<?, RequestBody> toRequestBody(Type aType, Annotation[] aAnnotations) {
 	     
 		 if( aType.equals( SendMessage.class ) ) {
-			 return new StringMessageConverter( mGson );
+			 return new SendMessageConverter( mGson );
 		 }
 		 return null;
 	 }

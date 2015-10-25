@@ -451,9 +451,8 @@ public interface PsnApiService {
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<SendMessageResponse> addMembersToDiscussion(@Url String aUrl,
+			
 			@Body MemberList aMemberList);
-	
-	
 	
 	
 }
