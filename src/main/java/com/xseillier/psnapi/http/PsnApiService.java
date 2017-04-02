@@ -1,66 +1,21 @@
 package com.xseillier.psnapi.http;
 
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_ADD_AUTHORIZATION;
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_CONTENT_TYPE;
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_REQUESTED_WITH;
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.HEADER_X_NP_ACCESS_TOKEN;
-import static com.xseillier.psnapi.http.cst.HttpHeaderCst.TYPE_MINE_JSON;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.PARAM_REQUESTED_WITH;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_MESSAGE_UID;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AUTH_TOKEN_REDIRECT_URI;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_AVATARSIZES;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CLIENT_ID;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CLIENT_SECRET;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_CODE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_DIRECTION;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_DUID;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_FIELDS;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_FRIENDSTATUS;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_GRANT_TYPE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_IMAGESIZE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_LIMIT;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_NP_LANGUAGE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_OFFSET;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_ONLINE_ID;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PLATFORM;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_PRESENCETYPE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_REFRESH_TOKEN;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SCOPE;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SINCE_MESSAGE_UID;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_SORT;
-import static com.xseillier.psnapi.http.cst.UrlParamCst.URL_PARAM_STATE;
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.Field;
-import retrofit.http.FormUrlEncoded;
-import retrofit.http.GET;
-import retrofit.http.Header;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Query;
-import retrofit.http.Url;
-
 import com.xseillier.psnapi.model.AccessToken;
 import com.xseillier.psnapi.model.ServiceUrl;
 import com.xseillier.psnapi.model.block.BlockList;
-import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.FriendProfile;
-import com.xseillier.psnapi.model.friend.FriendReceiveRequestList;
-import com.xseillier.psnapi.model.friend.FriendSendRequestList;
-import com.xseillier.psnapi.model.friend.ProfileList;
-import com.xseillier.psnapi.model.messaging.Discussion;
-import com.xseillier.psnapi.model.messaging.DiscussionList;
-import com.xseillier.psnapi.model.messaging.MemberList;
-import com.xseillier.psnapi.model.messaging.SendMessage;
-import com.xseillier.psnapi.model.messaging.SendMessageResponse;
+import com.xseillier.psnapi.model.friend.*;
+import com.xseillier.psnapi.model.messaging.*;
 import com.xseillier.psnapi.model.param.MessageSeen;
 import com.xseillier.psnapi.model.param.RequestMessage;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsDetailsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyGroupsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyTitleList;
 import com.xseillier.psnapi.model.user.User;
+import retrofit2.Call;
+import retrofit2.http.*;
+
+import static com.xseillier.psnapi.http.cst.HttpHeaderCst.*;
+import static com.xseillier.psnapi.http.cst.UrlParamCst.*;
 /**
  *
  * @author xseillier
@@ -116,7 +71,6 @@ public interface PsnApiService {
 	/**
 	 * return base url for rest service
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -137,8 +91,7 @@ public interface PsnApiService {
 	/**
 	 * return the friend list
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @param aSort
 	 * @param aAvatarSize
 	 * @param aPresenceType
@@ -150,7 +103,7 @@ public interface PsnApiService {
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendList> getFriendList(@Url String aUrl,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
 			@Query( URL_PARAM_PRESENCETYPE ) String aPresenceType,
@@ -162,14 +115,13 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendProfile> getFriendDetail(@Url String aUrl,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam,
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
 	
 	
@@ -177,16 +129,15 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aOnlineIds
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<ProfileList> getMultiFriendDetail(@Url String aUrl,
 			@Query( URL_PARAM_ONLINE_ID ) String aOnlineIds,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam,
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize );
 	
 	
@@ -194,7 +145,6 @@ public interface PsnApiService {
 	/**
 	 * del friend from friend list
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -206,7 +156,6 @@ public interface PsnApiService {
 	/**
 	 * add friend from friend list ( new Friend must accept)
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -219,8 +168,7 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @param aAvatarSize
 	 * @param aPresenceType
 	 * @param aDirection
@@ -231,7 +179,7 @@ public interface PsnApiService {
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<FriendSendRequestList> getFriendSendRequest(@Url String aUrl,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
 			@Query( URL_PARAM_PRESENCETYPE ) String aPresenceType,
@@ -243,8 +191,7 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @param aAvatarSize
 	 * @param aPresenceType
 	 * @param aDirection
@@ -255,7 +202,7 @@ public interface PsnApiService {
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_CONTENT_TYPE +": "+ TYPE_MINE_JSON , HEADER_ADD_AUTHORIZATION +": "+ "add" } )
 	@GET
 	Call<FriendReceiveRequestList> getFriendReceiveRequest(@Url String aUrl,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
 			@Query( URL_PARAM_PRESENCETYPE ) String aPresenceType,
@@ -267,7 +214,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aTrophyParam
 	 * @param aNpLanguage
 	 * @param aImageSize
@@ -291,7 +237,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aTrophyParam
 	 * @param aNpLanguage
 	 * @param aImageSize
@@ -308,7 +253,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aTrophyParam
 	 * @param aNpLanguage
 	 * @param aImageSize
@@ -325,7 +269,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -335,7 +278,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -346,8 +288,7 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @param aSort
 	 * @param aAvatarSize
 	 * @param aOffset
@@ -357,7 +298,7 @@ public interface PsnApiService {
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@GET
 	Call<BlockList> getBlockProfileList(@Url String aUrl,
-			@Query( URL_PARAM_FIELDS ) String aProfileParam, 
+			@Query( URL_PARAM_FIELDS ) String aProfileParams,
 			@Query( URL_PARAM_SORT ) String aSort, 
 			@Query( URL_PARAM_AVATARSIZES ) String aAvatarSize,
 			@Query( URL_PARAM_OFFSET ) int aOffset,
@@ -368,7 +309,6 @@ public interface PsnApiService {
 	/**
 	 *  send message
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aMessage
 	 * @return
 	 */
@@ -381,8 +321,8 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
-	 * @param aMessage
+	 * @param aMessageId
+	 * @param aMessageSeen
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -395,7 +335,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aMessage
 	 * @return
 	 */
@@ -407,7 +346,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aDiscussionParam
 	 * @param aNpLanguage
 	 * @return
@@ -434,7 +372,6 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
@@ -444,15 +381,12 @@ public interface PsnApiService {
 	/**
 	 * 
 	 * @param aUrl
-	 * @param aAuthorisation
 	 * @param aMemberList
 	 * @return
 	 */
 	@Headers({ HEADER_REQUESTED_WITH +": "+ PARAM_REQUESTED_WITH, HEADER_ADD_AUTHORIZATION +": "+ "add"  } )
 	@POST
 	Call<SendMessageResponse> addMembersToDiscussion(@Url String aUrl,
-			
 			@Body MemberList aMemberList);
-	
-	
+
 }

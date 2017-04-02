@@ -28,7 +28,7 @@ public class PsnErrorException extends Exception {
 	
 	
 	public PsnErrorException(PsnError aPsnError) {
-		this( aPsnError.getMessage(), aPsnError);
+		this( aPsnError.toString(), aPsnError);
 	}
 
 

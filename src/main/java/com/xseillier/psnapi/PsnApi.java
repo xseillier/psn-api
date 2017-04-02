@@ -1,22 +1,12 @@
 package com.xseillier.psnapi;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.List;
-
 import com.xseillier.psnapi.http.exception.AccessDeniedByPrivacyLevelException;
 import com.xseillier.psnapi.http.exception.LoginException;
 import com.xseillier.psnapi.http.exception.PsnErrorException;
 import com.xseillier.psnapi.model.PsnContext;
 import com.xseillier.psnapi.model.block.BlockList;
 import com.xseillier.psnapi.model.block.BlockPagination;
-import com.xseillier.psnapi.model.friend.FriendList;
-import com.xseillier.psnapi.model.friend.FriendPagination;
-import com.xseillier.psnapi.model.friend.FriendProfile;
-import com.xseillier.psnapi.model.friend.FriendReceiveRequestList;
-import com.xseillier.psnapi.model.friend.FriendSendRequestList;
-import com.xseillier.psnapi.model.friend.ProfileList;
+import com.xseillier.psnapi.model.friend.*;
 import com.xseillier.psnapi.model.messaging.Discussion;
 import com.xseillier.psnapi.model.messaging.DiscussionList;
 import com.xseillier.psnapi.model.messaging.DiscussionPagination;
@@ -30,6 +20,11 @@ import com.xseillier.psnapi.model.trophy.TrophyGroupsResponse;
 import com.xseillier.psnapi.model.trophy.TrophyPagination;
 import com.xseillier.psnapi.model.trophy.TrophyTitleList;
 import com.xseillier.psnapi.model.user.User;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.List;
 
 /**
  *
@@ -49,7 +44,8 @@ public interface PsnApi {
 		
 	/**
 	 * 
-	 * @param aProxy
+	 * @param aHost
+	 * @param aPort
 	 */
 	public void addProxy( String aHost, int aPort ) throws UnknownHostException;
 	
@@ -87,15 +83,13 @@ public interface PsnApi {
 	/**
 	 * to get friend list 
 	 * @param aOnlineId your onlineId or others ( friend, unknown ) 
-	 * @param aOffset
-	 * @param aLimit
-	 * @param aAvatarSize
 	 * @param aProfileParams
+	 * @param aPagination
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
 	 */
-	public FriendList getFriendList(  String aOnlineId, ProfileParam aProfileParam, FriendPagination aPagination ) throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException;
+	public FriendList getFriendList(  String aOnlineId, ProfileParam aProfileParams, FriendPagination aPagination ) throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException;
 	
 	
 	
@@ -106,18 +100,18 @@ public interface PsnApi {
 	 * @return
 	 * @throws IOException
 	 */
-	public FriendProfile getFriendDetail( String aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException;
+	public FriendProfile getFriendDetail( String aOnlineId, ProfileParam aProfileParams ) throws IOException, PsnErrorException;
 	
 	
 	/**
 	 * 
 	 * @param aOnlineId
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
 	 */
-	public FriendProfile getFriendDetailV2( String aOnlineId, ProfileV2Param aProfileParam ) throws IOException, PsnErrorException;
+	public FriendProfile getFriendDetailV2( String aOnlineId, ProfileV2Param aProfileParams ) throws IOException, PsnErrorException;
 	
 	
 	/**
@@ -127,7 +121,7 @@ public interface PsnApi {
 	 * @return
 	 * @throws IOException
 	 */
-	public ProfileList getMultiFriendDetail( List<String> aOnlineId, ProfileParam aProfileParam ) throws IOException, PsnErrorException;
+	public ProfileList getMultiFriendDetail( List<String> aOnlineId, ProfileParam aProfileParams ) throws IOException, PsnErrorException;
 	
 	
 	/**
@@ -161,33 +155,31 @@ public interface PsnApi {
 	
 	
 	/**
-	 * 
-	 * @param aYourOnlineId
-	 * @param aProfileParam
-	 * @return
-	 * @throws IOException
-	 * @throws PsnErrorException
-	 */
-	public FriendSendRequestList getFriendSendRequest( ProfileParam aProfileParam, FriendPagination aPagination )  throws IOException, PsnErrorException;
-	
-	
-	/**
-	 * 
-	 * @param aProfileParam
+	 *
+	 * @param aProfileParams
 	 * @param aPagination
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
 	 */
-	public FriendReceiveRequestList getFriendReceiveRequest( ProfileParam aProfileParam, FriendPagination aPagination )  throws IOException, PsnErrorException;
+	public FriendSendRequestList getFriendSendRequest( ProfileParam aProfileParams, FriendPagination aPagination )  throws IOException, PsnErrorException;
 	
 	
 	/**
 	 * 
-	 * @param aLocale
-	 * @param aOffset offset of start
-	 * @param aLimit size of trophy (max 64)
-	 * @param aAvatarSize
+	 * @param aProfileParams
+	 * @param aPagination
+	 * @return
+	 * @throws IOException
+	 * @throws PsnErrorException
+	 */
+	public FriendReceiveRequestList getFriendReceiveRequest( ProfileParam aProfileParams, FriendPagination aPagination )  throws IOException, PsnErrorException;
+	
+	
+	/**
+	 * 
+	 * @param aTrophyParam
+	 * @param aPagination offset of start
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
@@ -198,8 +190,7 @@ public interface PsnApi {
 	/**
 	 * 
 	 * @param aNameId
-	 * @param aLocale
-	 * @param aImageSize
+	 * @param aTrophyParam
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
@@ -211,8 +202,7 @@ public interface PsnApi {
 	 * 
 	 * @param aGameId
 	 * @param aTrophyGroupId
-	 * @param aLocale
-	 * @param aImageSize
+	 * @param aTrophyParam
 	 * @return
 	 * @throws IOException
 	 * @throws PsnErrorException
@@ -239,14 +229,14 @@ public interface PsnApi {
 	/**
 	 * 
 	 * @param aOnlineId
-	 * @param aProfileParam
+	 * @param aProfileParams
 	 * @param aPagination
 	 * @return
 	 * @throws IOException
 	 * @throws AccessDeniedByPrivacyLevelException
 	 * @throws PsnErrorException
 	 */
-	public BlockList getBlockProfileList(  String aOnlineId, ProfileParam aProfileParam, BlockPagination aPagination ) throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException;
+	public BlockList getBlockProfileList(  String aOnlineId, ProfileParam aProfileParams, BlockPagination aPagination ) throws IOException, AccessDeniedByPrivacyLevelException, PsnErrorException;
 	
 	
 	/**
@@ -332,7 +322,7 @@ public interface PsnApi {
 	
 	/**
 	 * 
-	 * @param aMemberList
+	 * @param aOnlineIdList
 	 * @param aDiscussionId
 	 * @retourn SimpleDiscussion
 	 * @throws IOException

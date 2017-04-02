@@ -1,8 +1,9 @@
 package com.xseillier.psnapi.http.interceptor;
 
-import java.io.IOException;
+import okhttp3.Interceptor;
+import okhttp3.Response;
 
-import com.squareup.okhttp.Interceptor;
+import java.io.IOException;
 
 /**
  * Interceptor to limit nb requests by seconds
@@ -18,7 +19,7 @@ public class CountRequestInterceptor  implements Interceptor {
 	  }
 	
 	  @Override 
-	  public com.squareup.okhttp.Response intercept(Chain aChain) throws IOException {		  	
+	  public Response intercept(Chain aChain) throws IOException {
 		  	System.out.println( "" + ( ++mCount ) );
 		  	return aChain.proceed( aChain.request() );
 	}

@@ -1,17 +1,13 @@
 package com.xseillier.psnapi.http.impl;
 
-import java.io.IOException;
-
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 import com.xseillier.psnapi.http.Login;
 import com.xseillier.psnapi.http.cst.HttpHeaderCst;
 import com.xseillier.psnapi.http.cst.UrlParamCst;
 import com.xseillier.psnapi.http.exception.LoginException;
 import com.xseillier.psnapi.utils.StringUtils;
+import okhttp3.*;
+
+import java.io.IOException;
 
 /**
  *
@@ -23,10 +19,10 @@ public class LoginImpl implements Login {
 		
 	private static String PATTERN_LOGIN_KO = "authentication_error=true";
 	
-	private OkHttpClient mOkHttpClient;
+	private OkHttpClient.Builder mOkHttpClientBuilder;
 	
-	public LoginImpl( OkHttpClient aOkHttpClient ) {
-		mOkHttpClient = aOkHttpClient;
+	public LoginImpl( OkHttpClient.Builder aOkHttpClientBuilder ) {
+		mOkHttpClientBuilder = aOkHttpClientBuilder;
 	}
 	
 	@Override
@@ -34,7 +30,7 @@ public class LoginImpl implements Login {
 			String aRedirectUrl, String aClientId, String aScope) throws LoginException {
 
 		Response oResponse      = null;
-		Request  oRequest       = null;
+		Request oRequest       = null;
 		String   oBrandingParam = null;
 		StringBuilder oUrl = new StringBuilder();
 		
@@ -50,12 +46,11 @@ public class LoginImpl implements Login {
 	        .url( oUrl.toString() )
 	        .build();
 		try {
-			oResponse = mOkHttpClient.newCall(oRequest).execute();
-		    if (!oResponse.isSuccessful()) throw new LoginException("Login Error step 1. Unexpected code " + oResponse);
-			    
-		    
+			oResponse = mOkHttpClientBuilder.build().newCall(oRequest).execute();
+
 		    if( oResponse != null  )
-			{		
+			{
+				if (!oResponse.isSuccessful()) throw new LoginException("Login Error step 1. Unexpected code " + oResponse);
 		    	
 		    	String oBody = oResponse.body().string();
 		    	if( oBody.contains( UrlParamCst.URL_PARAM_BRANDING_PARAM ) ){
@@ -82,21 +77,21 @@ public class LoginImpl implements Login {
 		Request  oRequest       = null;
 		String oUrlLocation     = null;
 		
-		RequestBody oFormBody = new FormEncodingBuilder()
+		FormBody oFormBody = new FormBody.Builder()
         .add( UrlParamCst.URL_PARAM_USERNAME       ,  String.valueOf( aPSNLogin ) )
         .add( UrlParamCst.URL_PARAM_PASSWORD       ,  String.valueOf( aPSNPassword )  )
         .add( UrlParamCst.URL_PARAM_BRANDING_PARAM ,  String.valueOf( aBrandingParam ) )	   
         .build();
 		
-		mOkHttpClient.setFollowRedirects(false);
+		mOkHttpClientBuilder.followRedirects(false);
     	oRequest = new Request.Builder()
-        .url( aUrl )
-        .post(oFormBody)
-        .build();
+			.url( aUrl )
+			.post(oFormBody)
+			.build();
     	
     	try {
     		   	
-	    	oResponse = mOkHttpClient.newCall( oRequest ).execute();    	  	 
+	    	oResponse = mOkHttpClientBuilder.build().newCall( oRequest ).execute();
 	    	oUrlLocation = oResponse.header( HttpHeaderCst.HEADER_LOCATION );
     	 
 	    	if( oUrlLocation == null || "".equals(oUrlLocation ) ) {
@@ -111,7 +106,7 @@ public class LoginImpl implements Login {
 	    	 throw new LoginException("Login Error step 2.", ioe );
 	    }
     	finally {
-    		mOkHttpClient.setFollowRedirects( true );	
+    		mOkHttpClientBuilder.followRedirects( true );
     	}
     	return oUrlLocation;
 	}
@@ -125,14 +120,14 @@ public class LoginImpl implements Login {
 		String oLoginCode       = null;
 		
 		 
-		mOkHttpClient.setFollowRedirects(false);
+		mOkHttpClientBuilder.followRedirects(false);
 		oRequest = new Request.Builder()
 	        .url( aUrl )
 	        .build();
 	    	
 		try {
 			
-			oResponse = mOkHttpClient.newCall(oRequest).execute();			
+			oResponse = mOkHttpClientBuilder.build().newCall(oRequest).execute();
 			oLoginCode = oResponse.header( HttpHeaderCst.HEADER_X_NP_GRANT_CODE );
 			
 			if( oLoginCode == null || "".equals( oLoginCode ) ) {
@@ -144,7 +139,7 @@ public class LoginImpl implements Login {
 
 		} 
 		finally {
-			mOkHttpClient.setFollowRedirects( true );
+			mOkHttpClientBuilder.followRedirects( true );
 		}
 	    		    	    
 		return oLoginCode;
