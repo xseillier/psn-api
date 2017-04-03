@@ -1,13 +1,13 @@
 package com.xseillier.psnapi.http.retrofit.converter;
 
+import com.google.gson.Gson;
+import com.xseillier.psnapi.model.messaging.SendMessage;
+import okhttp3.RequestBody;
+import retrofit2.Converter;
+import retrofit2.Retrofit;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-
-import retrofit.Converter;
-
-import com.google.gson.Gson;
-import com.squareup.okhttp.RequestBody;
-import com.xseillier.psnapi.model.messaging.SendMessage;
 
 /**
  *
@@ -22,13 +22,11 @@ private Gson mGson;
 		mGson = aGson;
 	}
 
-
-	 public Converter<?, RequestBody> toRequestBody(Type aType, Annotation[] aAnnotations) {
-	     
-		 if( aType.equals( SendMessage.class ) ) {
-			 return new SendMessageConverter( mGson );
-		 }
-		 return null;
-	 }
-
+	@Override
+	public Converter<?, RequestBody> requestBodyConverter(Type aType, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+		if( aType.equals( SendMessage.class ) ) {
+			return new SendMessageConverter( mGson );
+		}
+		return null;
+	}
 }

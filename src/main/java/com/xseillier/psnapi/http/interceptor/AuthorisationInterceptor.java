@@ -1,12 +1,13 @@
 package com.xseillier.psnapi.http.interceptor;
 
-import java.io.IOException;
-
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
 import com.xseillier.psnapi.PsnApi;
 import com.xseillier.psnapi.http.cst.HttpHeaderCst;
 import com.xseillier.psnapi.utils.UrlUtils;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import java.io.IOException;
 
 /**
  * Inject oauth2 token in httpHeader is header HttpHeaderCst.HEADER_ADD_AUTHORIZATION is present
@@ -23,7 +24,7 @@ public class AuthorisationInterceptor  implements Interceptor {
 	  }
 	
 	  @Override 
-	  public com.squareup.okhttp.Response intercept(Chain aChain) throws IOException {		  	
+	  public Response intercept(Chain aChain) throws IOException {
 		  
 		  	Request oRequest = aChain.request();
 		  	

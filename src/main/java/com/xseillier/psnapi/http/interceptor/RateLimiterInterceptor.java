@@ -1,9 +1,10 @@
 package com.xseillier.psnapi.http.interceptor;
 
-import java.io.IOException;
-
 import com.google.common.util.concurrent.RateLimiter;
-import com.squareup.okhttp.Interceptor;
+import okhttp3.Interceptor;
+import okhttp3.Response;
+
+import java.io.IOException;
 
 /**
  * Interceptor to limit nb requests by seconds
@@ -18,7 +19,7 @@ public class RateLimiterInterceptor  implements Interceptor {
 	  }
 	
 	  @Override 
-	  public com.squareup.okhttp.Response intercept(Chain aChain) throws IOException {		  	
+	  public Response intercept(Chain aChain) throws IOException {
 		  	mRateLimiter.acquire();
 		  	return aChain.proceed( aChain.request() );
 	}

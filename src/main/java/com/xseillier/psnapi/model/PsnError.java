@@ -9,6 +9,7 @@ public class PsnError {
 
 	
 	private Error mError;
+	private int mHttpCode;
 	
 	
 	private class Error
@@ -43,5 +44,17 @@ public class PsnError {
 	public void setMessage( String aMessage ) {
 		 mError.mMessage = aMessage;
 	}
-	
+
+	public int getHttpCode() {
+		return mHttpCode;
+	}
+
+	public void setHttpCode(int aHttpCode) {
+		mHttpCode = aHttpCode;
+	}
+
+    @Override
+    public String toString() {
+        return String.format("Http code: %d\tPsn code: %d\tMessage: %s", getHttpCode(), getCode(), getMessage());
+    }
 }

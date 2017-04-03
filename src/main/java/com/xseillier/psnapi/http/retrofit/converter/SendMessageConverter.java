@@ -1,26 +1,23 @@
 package com.xseillier.psnapi.http.retrofit.converter;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.management.RuntimeErrorException;
-
-import retrofit.Converter;
-
 import com.google.gson.Gson;
-import com.squareup.okhttp.Headers;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
 import com.xseillier.psnapi.model.messaging.SendMessage;
 import com.xseillier.psnapi.utils.FileUtils;
+import okhttp3.Headers;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Converter;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
  * @author xseillier
  * @version 1.0 5 oct. 2015
  */
-public class SendMessageConverter implements Converter< SendMessage, RequestBody > {
+public class SendMessageConverter implements Converter< SendMessage, RequestBody> {
 
 	private Gson mGson;
 	
@@ -32,7 +29,7 @@ public class SendMessageConverter implements Converter< SendMessage, RequestBody
 	public RequestBody convert(SendMessage aSendMessage) {
 		//return new MessageRequestBody( aValue, mGson );
 		
-		MultipartBuilder  oMultipartBuilder = new MultipartBuilder().type( MultipartBuilder.MIXED );
+		MultipartBody.Builder  oMultipartBuilder = new MultipartBody.Builder().setType( MultipartBody.MIXED );
 		
 		
 		oMultipartBuilder.addPart(
