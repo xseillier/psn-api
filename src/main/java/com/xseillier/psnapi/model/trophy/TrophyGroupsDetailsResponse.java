@@ -10,15 +10,15 @@ import java.util.List;
 public class TrophyGroupsDetailsResponse {
 
 	
-	private FromUser mFoFromUser;	
+	private FromUser mFromUser;
 	private List<Trophy> mTrophies;
 	
 //=============================================================================
 // Accessor
 //=============================================================================
 
-	public FromUser getFoFromUser() {
-		return mFoFromUser;
+	public FromUser getFromUser() {
+		return mFromUser;
 	}
 	
 	public List<Trophy> getTrophies() {

@@ -7,17 +7,15 @@ package com.xseillier.psnapi.model.trophy;
 */
 public class Trophy {
 
-	
-	
-	
-	 private String mTrophyDetail; 
-     private String mTophyEarnedRate;
-     private String mTrophyHidden;
-     private String mTrophyIconUrl;
-     private int    mTrophyId;
-     private String mTrophyName;
-     private int 	mTrophyRare;
-     private String mTrophyType;
+	private String mTrophyDetail;
+	private String mTophyEarnedRate;
+	private String mTrophyHidden;
+	private String mTrophyIconUrl;
+	private int    mTrophyId;
+	private String mTrophyName;
+	private int 	mTrophyRare;
+	private String mTrophyType;
+	private FromUser mFromUser;
      
 //=============================================================================
 // Accessor
@@ -53,6 +51,10 @@ public class Trophy {
 	
 	public String getTrophyType() {
 		return mTrophyType;
+	}
+
+	public FromUser getFromUser() {
+		return mFromUser;
 	}
    
 }
