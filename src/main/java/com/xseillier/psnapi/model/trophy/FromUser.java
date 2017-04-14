@@ -16,6 +16,8 @@ public class FromUser {
     private Date mLastUpdateDate;
     private String mOnlineId;
     private int mProgress;
+	private boolean mEarned;
+	private Date mEarnedDate;
     
 //=============================================================================
 // Accessor
@@ -41,5 +43,11 @@ public class FromUser {
 		return mProgress;
 	}
     
-	
+	public boolean getEarned(){
+		return mEarned;
+	}
+
+	public Date getEarnedDate() {
+		return mEarnedDate;
+	}
 }
