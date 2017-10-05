@@ -1,6 +1,12 @@
+
+# 05/10/2017 does not work anymore :(, since the addition of a captcha on the login page
+
+
 ### PSN API
 This API allows you to query the servers Sony Playstation Network to retrieve data on their PSN account, these trophies, those friends.
 This API is based on a reverse engineer work on the Android application.
+
+
 
 ### Requirements
 * Valid PSN account
